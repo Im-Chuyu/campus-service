@@ -1,8 +1,11 @@
 package com.twilight.campus.service.impl;
 
+import com.twilight.campus.constant.JwtClaimsConstant;
+import com.twilight.campus.constant.RedisKeyConstant;
 import com.twilight.campus.constant.ResultCodeConstant;
 import com.twilight.campus.dto.UserLoginDTO;
 import com.twilight.campus.dto.UserRegisterDTO;
+import com.twilight.campus.dto.UserUpdateDTO;
 import com.twilight.campus.dto.UserUpdatePasswordDTO;
 import com.twilight.campus.exception.BusinessException;
 import com.twilight.campus.mapper.UserMapper;
@@ -10,9 +13,12 @@ import com.twilight.campus.pojo.SysUser;
 import com.twilight.campus.service.UserService;
 import com.twilight.campus.utils.JwtUtil;
 import com.twilight.campus.utils.PasswordUtil;
-import org.springframework.beans.BeanUtils;
+import com.twilight.campus.utils.RedisUtil;
+import com.twilight.campus.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -45,7 +51,6 @@ public class UserServiceImpl implements UserService {
         userMapper.insert(user);
     }
 
-    //登录
     @Override
     public String login(UserLoginDTO dto) {
         SysUser user = userMapper.selectByUsername(dto.getUsername());
@@ -63,30 +68,57 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(400, "密码错误");
         }
 
-        // 这里建议 token 里带 userId、username、roleId
-        return JwtUtil.createToken(user.getId(), user.getUsername(), String.valueOf(user.getRoleId()));
+        // 生成token
+        String token = JwtUtil.createToken(
+                user.getId(),
+                user.getUsername(),
+                String.valueOf(user.getRoleId())
+        );
+
+        // 存入Redis，覆盖旧token，安装了redis后取消注释即可
+        //String key = RedisKeyConstant.LOGIN_TOKEN_PREFIX + user.getId();
+        //RedisUtil.set(key, token, JwtClaimsConstant.JWT_TTL, TimeUnit.MILLISECONDS);
+
+        return token;
     }
+
 
 
     //修改密码
     @Override
     public void updatePassword(UserUpdatePasswordDTO dto) {
-        SysUser user = userMapper.selectById(dto.getUserId());
-        if (user == null) {
-            throw new BusinessException(ResultCodeConstant.NOT_FOUND, "用户不存在");
+        // 1. 获取当前登录用户
+        SysUser currentUser = UserContext.getUser();
+        if (currentUser == null) {
+            throw new BusinessException(ResultCodeConstant.UNAUTHORIZED, "未登录");
         }
 
-        if (!PasswordUtil.matches(dto.getOldPassword(), user.getPassword())) {
-            throw new BusinessException(ResultCodeConstant.BAD_REQUEST, "原密码错误");
-        }
-
+        // 2. 判断两次新密码是否一致
         if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
             throw new BusinessException(ResultCodeConstant.BAD_REQUEST, "两次新密码不一致");
         }
 
-        user.setPassword(PasswordUtil.encode(dto.getNewPassword()));
-        userMapper.updatePassword(user);
+        // 3. 判断新密码不能和旧密码一样
+        if (dto.getOldPassword().equals(dto.getNewPassword())) {
+            throw new BusinessException(ResultCodeConstant.BAD_REQUEST, "新密码不能和旧密码相同");
+        }
+
+        // 4. 校验旧密码是否正确
+        if (!PasswordUtil.matches(dto.getOldPassword(), currentUser.getPassword())) {
+            throw new BusinessException(ResultCodeConstant.BAD_REQUEST, "原密码错误");
+        }
+
+        // 5. 加密新密码
+        String encodedPassword = PasswordUtil.encode(dto.getNewPassword());
+
+        // 6. 更新数据库
+        SysUser updateUser = new SysUser();
+        updateUser.setId(currentUser.getId());
+        updateUser.setPassword(encodedPassword);
+
+        userMapper.updatePassword(updateUser);
     }
+
 
     //查询用户
     @Override
@@ -100,11 +132,38 @@ public class UserServiceImpl implements UserService {
 
     //更新用户
     @Override
-    public void updateUser(SysUser user) {
-        SysUser dbUser = userMapper.selectById(user.getId());
-        if (dbUser == null) {
+    public void updateUser(UserUpdateDTO dto) {
+        // 1. 获取当前登录用户
+        SysUser currentUser = UserContext.getUser();
+        if (currentUser == null) {
+            throw new BusinessException(ResultCodeConstant.UNAUTHORIZED, "未登录");
+        }
+
+        // 2. 查数据库中的用户
+        SysUser user = userMapper.selectById(currentUser.getId());
+        if (user == null) {
             throw new BusinessException(ResultCodeConstant.NOT_FOUND, "用户不存在");
         }
+
+        // 3. 更新允许修改的字段
+        if (dto.getNickname() != null) {
+            user.setNickname(dto.getNickname());
+        }
+        if (dto.getPhone() != null) {
+            user.setPhone(dto.getPhone());
+        }
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail());
+        }
+        if (dto.getGender() != null) {
+            user.setGender(dto.getGender());
+        }
+        if (dto.getAvatar() != null) {
+            user.setAvatar(dto.getAvatar());
+        }
+
+        // 4. 更新数据库
         userMapper.updateUser(user);
     }
+
 }

@@ -1,5 +1,6 @@
 package com.twilight.campus.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 public class SysUser {
     private Long id;
     private String username;
+    @JsonIgnore
     private String password;
     private String nickname;
     private String avatar;

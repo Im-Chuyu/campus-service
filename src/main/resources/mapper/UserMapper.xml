@@ -33,13 +33,26 @@
 
     <update id="updateUser">
         update sys_user
-        set nickname = #{nickname},
-            avatar = #{avatar},
-            phone = #{phone},
-            email = #{email},
-            gender = #{gender},
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar},
+            </if>
             update_time = now()
+        </set>
         where id = #{id}
     </update>
+
 
 </mapper>
