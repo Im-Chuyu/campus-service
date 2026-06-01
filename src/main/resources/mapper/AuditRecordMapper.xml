@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.twilight.campus.mapper.AuditRecordMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into audit_record
+        (content_id, auditor_id, audit_result, audit_reason, create_time)
+        values
+        (#{contentId}, #{auditorId}, #{auditResult}, #{auditReason}, now())
+    </insert>
+
+    <select id="selectByContentId" resultType="com.twilight.campus.pojo.AuditRecord">
+        select
+        id, content_id, auditor_id, audit_result, audit_reason, create_time
+        from audit_record
+        where content_id = #{contentId}
+        order by create_time desc
+    </select>
+
+</mapper>

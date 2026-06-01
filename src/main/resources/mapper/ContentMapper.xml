@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.twilight.campus.mapper.ContentMapper">
+
+    <!-- 内容列表：支持标题、分类、状态筛选 -->
+    <select id="selectList" resultType="com.twilight.campus.pojo.Content">
+        select
+        id, title, content, cover_img, category_id, user_id, status, audit_reason,
+        is_top, view_count, like_count, favorite_count, comment_count, create_time, update_time
+        from content
+        <where>
+            <if test="title != null and title != ''">
+                and title like concat('%', #{title}, '%')
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by is_top desc, create_time desc
+    </select>
+
+    <!-- 我的发布内容 -->
+    <select id="selectByUserId" resultType="com.twilight.campus.pojo.Content">
+        select
+            id, title, content, cover_img, category_id, user_id, status, audit_reason,
+            is_top, view_count, like_count, favorite_count, comment_count, create_time, update_time
+        from content
+        where user_id = #{userId}
+        order by create_time desc
+    </select>
+
+    <!-- 根据ID查询内容 -->
+    <select id="selectById" resultType="com.twilight.campus.pojo.Content">
+        select
+            id, title, content, cover_img, category_id, user_id, status, audit_reason,
+            is_top, view_count, like_count, favorite_count, comment_count, create_time, update_time
+        from content
+        where id = #{id}
+        limit 1
+    </select>
+
+    <!-- 分类下是否有内容 -->
+    <select id="countByCategoryId" resultType="int">
+        select count(1)
+        from content
+        where category_id = #{categoryId}
+    </select>
+
+    <!-- 用户发布了多少内容 -->
+    <select id="countByUserId" resultType="int">
+        select count(1)
+        from content
+        where user_id = #{userId}
+    </select>
+
+    <!-- 新增内容 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into content
+        (title, content, cover_img, category_id, user_id, status, audit_reason,
+         is_top, view_count, like_count, favorite_count, comment_count, create_time, update_time)
+        values
+            (#{title}, #{content}, #{coverImg}, #{categoryId}, #{userId}, #{status}, #{auditReason},
+             #{isTop}, #{viewCount}, #{likeCount}, #{favoriteCount}, #{commentCount}, now(), now())
+    </insert>
+
+    <!-- 修改内容 -->
+    <update id="update">
+        update content
+        set title = #{title},
+            content = #{content},
+            cover_img = #{coverImg},
+            category_id = #{categoryId},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 删除内容 -->
+    <delete id="deleteById">
+        delete from content where id = #{id}
+    </delete>
+
+
+    <!-- 待审核内容列表 -->
+    <select id="selectWaitAuditList" resultType="com.twilight.campus.pojo.Content">
+        select
+            id, title, content, cover_img, category_id, user_id, status, audit_reason,
+            is_top, view_count, like_count, favorite_count, comment_count, create_time, update_time
+        from content
+        where status = 0
+        order by create_time asc
+    </select>
+
+    <!-- 更新审核状态 -->
+    <update id="updateAuditStatus">
+        update content
+        set status = #{status},
+            audit_reason = #{auditReason},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+</mapper>
