@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.twilight.campus.mapper.MessageMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into message
+        (user_id, title, content, type, is_read, related_id, create_time)
+        values
+        (#{userId}, #{title}, #{content}, #{type}, #{isRead}, #{relatedId}, now())
+    </insert>
+
+    <select id="selectByUserId" resultType="com.twilight.campus.pojo.Message">
+        select
+        id, user_id, title, content, type, is_read, related_id, create_time
+        from message
+        where user_id = #{userId}
+        order by is_read asc, create_time desc
+    </select>
+
+    <select id="countUnreadByUserId" resultType="int">
+        select count(*)
+        from message
+        where user_id = #{userId}
+        and is_read = 0
+    </select>
+
+    <select id="selectById" resultType="com.twilight.campus.pojo.Message">
+        select
+        id, user_id, title, content, type, is_read, related_id, create_time
+        from message
+        where id = #{id}
+        limit 1
+    </select>
+
+    <update id="markRead">
+        update message
+        set is_read = 1
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from message
+        where id = #{id}
+    </delete>
+
+    <select id="selectList" resultType="com.twilight.campus.pojo.Message">
+        select
+        id, user_id, title, content, type, is_read, related_id, create_time
+        from message
+        <where>
+            <if test="isRead != null">
+                and is_read = #{isRead}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+        </where>
+        order by is_read asc, create_time desc
+    </select>
+
+</mapper>

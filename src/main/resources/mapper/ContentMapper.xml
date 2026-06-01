@@ -105,4 +105,13 @@
         where id = #{id}
     </update>
 
+    <!--更新评论数-->
+    <update id="updateCommentCount">
+        update content
+        set comment_count = #{commentCount},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+
 </mapper>

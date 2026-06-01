@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.twilight.campus.mapper.StatisticsMapper">
+
+    <select id="countUsers" resultType="java.lang.Long">
+        select count(*) from sys_user
+    </select>
+
+    <select id="countContents" resultType="java.lang.Long">
+        select count(*) from content
+    </select>
+
+    <select id="countCategories" resultType="java.lang.Long">
+        select count(*) from category
+    </select>
+
+    <select id="countTodayContents" resultType="java.lang.Long">
+        select count(*)
+        from content
+        where date(create_time) = curdate()
+    </select>
+
+    <!-- 已审核内容：状态为 1通过、2拒绝、3下架，这里按已审核算 -->
+    <select id="countAuditedContents" resultType="java.lang.Long">
+        select count(*)
+        from content
+        where status in (1, 2, 3)
+    </select>
+
+    <!-- 已通过内容 -->
+    <select id="countPassedContents" resultType="java.lang.Long">
+        select count(*)
+        from content
+        where status = 1
+    </select>
+
+    <!-- 热门内容：按浏览量、点赞数、收藏数排序 -->
+    <select id="selectHotContentList" resultType="com.twilight.campus.vo.HotContentVO">
+        select
+        id,
+        title,
+        view_count as viewCount,
+        like_count as likeCount,
+        favorite_count as favoriteCount
+        from content
+        order by view_count desc, like_count desc, favorite_count desc
+        limit 10
+    </select>
+
+</mapper>

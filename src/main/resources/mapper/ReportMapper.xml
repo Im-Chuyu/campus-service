@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.twilight.campus.mapper.ReportMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into report
+        (user_id, content_id, report_type, report_reason, status, create_time)
+        values
+        (#{userId}, #{contentId}, #{reportType}, #{reportReason}, #{status}, now())
+    </insert>
+
+    <select id="selectById" resultType="com.twilight.campus.pojo.Report">
+        select
+        id, user_id, content_id, report_type, report_reason, status,
+        handler_id, handle_result, create_time, handle_time
+        from report
+        where id = #{id}
+        limit 1
+    </select>
+
+    <select id="selectByUserId" resultType="com.twilight.campus.pojo.Report">
+        select
+        id, user_id, content_id, report_type, report_reason, status,
+        handler_id, handle_result, create_time, handle_time
+        from report
+        where user_id = #{userId}
+        order by create_time desc
+    </select>
+
+    <select id="selectPendingList" resultType="com.twilight.campus.pojo.Report">
+        select
+        id, user_id, content_id, report_type, report_reason, status,
+        handler_id, handle_result, create_time, handle_time
+        from report
+        where status = 0
+        order by create_time asc
+    </select>
+
+    <select id="selectList" resultType="com.twilight.campus.pojo.Report">
+        select
+        id, user_id, content_id, report_type, report_reason, status,
+        handler_id, handle_result, create_time, handle_time
+        from report
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="contentId != null">
+                and content_id = #{contentId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <update id="updateHandle">
+        update report
+        set status = #{status},
+        handler_id = #{handlerId},
+        handle_result = #{handleResult},
+        handle_time = now()
+        where id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.twilight.campus.mapper.FavoriteMapper">
+
+    <select id="selectByUserIdAndContentId" resultType="com.twilight.campus.pojo.Favorite">
+        select id, user_id, content_id, create_time
+        from favorite
+        where user_id = #{userId}
+        and content_id = #{contentId}
+        limit 1
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into favorite
+        (user_id, content_id, create_time)
+        values
+        (#{userId}, #{contentId}, now())
+    </insert>
+
+    <delete id="deleteByUserIdAndContentId">
+        delete from favorite
+        where user_id = #{userId}
+        and content_id = #{contentId}
+    </delete>
+
+    <select id="selectByUserId" resultType="com.twilight.campus.pojo.Favorite">
+        select id, user_id, content_id, create_time
+        from favorite
+        where user_id = #{userId}
+        order by create_time desc
+    </select>
+
+</mapper>

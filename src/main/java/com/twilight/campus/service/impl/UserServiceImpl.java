@@ -20,6 +20,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    //用户注册
     @Override
     public void register(UserRegisterDTO dto) {
         if (!dto.getPassword().equals(dto.getConfirmPassword())) {
@@ -44,6 +45,7 @@ public class UserServiceImpl implements UserService {
         userMapper.insert(user);
     }
 
+    //登录
     @Override
     public String login(UserLoginDTO dto) {
         SysUser user = userMapper.selectByUsername(dto.getUsername());
@@ -66,6 +68,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    //修改密码
     @Override
     public void updatePassword(UserUpdatePasswordDTO dto) {
         SysUser user = userMapper.selectById(dto.getUserId());
@@ -85,6 +88,7 @@ public class UserServiceImpl implements UserService {
         userMapper.updatePassword(user);
     }
 
+    //查询用户
     @Override
     public SysUser getUserInfo(Long userId) {
         SysUser user = userMapper.selectById(userId);
@@ -94,6 +98,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    //更新用户
     @Override
     public void updateUser(SysUser user) {
         SysUser dbUser = userMapper.selectById(user.getId());

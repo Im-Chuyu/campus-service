@@ -59,4 +59,10 @@ public interface ContentMapper {
      * 更新内容审核状态和原因
      */
     int updateAuditStatus(Content content);
+
+    /**
+     * 更新内容评论数
+     */
+    int updateCommentCount(Content content);
+
 }

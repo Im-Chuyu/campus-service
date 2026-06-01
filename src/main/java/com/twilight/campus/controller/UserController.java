@@ -6,6 +6,7 @@ import com.twilight.campus.dto.UserUpdatePasswordDTO;
 import com.twilight.campus.pojo.SysUser;
 import com.twilight.campus.result.Result;
 import com.twilight.campus.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public Result<?> register(@RequestBody UserRegisterDTO dto) {
+    public Result<?> register(@RequestBody @Valid UserRegisterDTO dto) {
         userService.register(dto);
         return Result.success("注册成功", null);
     }
@@ -29,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping("/updatePassword")
-    public Result<?> updatePassword(@RequestBody UserUpdatePasswordDTO dto) {
+    public Result<?> updatePassword(@RequestBody @Valid UserUpdatePasswordDTO dto) {
         userService.updatePassword(dto);
         return Result.success("修改密码成功", null);
     }
