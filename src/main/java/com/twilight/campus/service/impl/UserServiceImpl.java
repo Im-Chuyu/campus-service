@@ -15,9 +15,11 @@ import com.twilight.campus.utils.JwtUtil;
 import com.twilight.campus.utils.PasswordUtil;
 import com.twilight.campus.utils.RedisUtil;
 import com.twilight.campus.utils.UserContext;
+import com.twilight.campus.utils.AuthUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -164,6 +166,32 @@ public class UserServiceImpl implements UserService {
 
         // 4. 更新数据库
         userMapper.updateUser(user);
+    }
+
+    @Override
+    public List<SysUser> list(String keyword, Integer status, Long roleId) {
+        AuthUtil.checkAdmin();
+        return userMapper.selectList(keyword, status, roleId);
+    }
+
+    @Override
+    public void updateStatus(Long id, Integer status) {
+        AuthUtil.checkAdmin();
+        if (status == null || (status != 0 && status != 1)) {
+            throw new BusinessException(ResultCodeConstant.BAD_REQUEST, "用户状态不正确");
+        }
+
+        SysUser currentUser = AuthUtil.getLoginUser();
+        if (currentUser.getId().equals(id)) {
+            throw new BusinessException(ResultCodeConstant.BAD_REQUEST, "不能修改自己的账号状态");
+        }
+
+        SysUser user = userMapper.selectById(id);
+        if (user == null) {
+            throw new BusinessException(ResultCodeConstant.NOT_FOUND, "用户不存在");
+        }
+
+        userMapper.updateStatus(id, status);
     }
 
 }

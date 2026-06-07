@@ -1,6 +1,6 @@
 package com.twilight.campus.service;
 
-import com.twilight.campus.pojo.Favorite;
+import com.twilight.campus.vo.FavoriteVO;
 
 import java.util.List;
 
@@ -19,5 +19,6 @@ public interface FavoriteService {
     /**
      * 我的收藏
      */
-    List<Favorite> myList();
+    List<FavoriteVO> myList();
+
 }

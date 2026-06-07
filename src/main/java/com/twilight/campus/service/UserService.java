@@ -6,6 +6,8 @@ import com.twilight.campus.dto.UserUpdateDTO;
 import com.twilight.campus.dto.UserUpdatePasswordDTO;
 import com.twilight.campus.pojo.SysUser;
 
+import java.util.List;
+
 public interface UserService {
 
     void register(UserRegisterDTO dto);
@@ -17,4 +19,8 @@ public interface UserService {
     SysUser getUserInfo(Long userId);
 
     void updateUser(UserUpdateDTO user);
+
+    List<SysUser> list(String keyword, Integer status, Long roleId);
+
+    void updateStatus(Long id, Integer status);
 }

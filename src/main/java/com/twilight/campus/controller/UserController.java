@@ -14,6 +14,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -52,6 +54,19 @@ public class UserController {
     public Result<SysUser> getMyInfo() {
         SysUser user = userService.getUserInfo(UserContext.getUser().getId());
         return Result.success(user);
+    }
+
+    // 用户列表（管理员）
+    @GetMapping("/list")
+    public Result<List<SysUser>> list(String keyword, Integer status, Long roleId) {
+        return Result.success(userService.list(keyword, status, roleId));
+    }
+
+    // 启用/禁用用户（管理员）
+    @PutMapping("/status/{id}/{status}")
+    public Result<?> updateStatus(@PathVariable Long id, @PathVariable Integer status) {
+        userService.updateStatus(id, status);
+        return Result.success(status == 1 ? "账号已启用" : "账号已禁用", null);
     }
 
 

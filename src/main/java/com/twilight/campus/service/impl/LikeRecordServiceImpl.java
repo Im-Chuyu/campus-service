@@ -11,12 +11,14 @@ import com.twilight.campus.service.LikeRecordService;
 import com.twilight.campus.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
  * 点赞业务实现类
  */
+@Transactional
 @Service
 public class LikeRecordServiceImpl implements LikeRecordService {
 
@@ -48,8 +50,7 @@ public class LikeRecordServiceImpl implements LikeRecordService {
         likeRecord.setContentId(contentId);
         likeRecordMapper.insert(likeRecord);
 
-        content.setLikeCount(content.getLikeCount() == null ? 1 : content.getLikeCount() + 1);
-        contentMapper.update(content);
+        contentMapper.increaseLikeCount(contentId);
     }
 
     @Override
@@ -66,11 +67,7 @@ public class LikeRecordServiceImpl implements LikeRecordService {
 
         likeRecordMapper.deleteByUserIdAndContentId(currentUser.getId(), contentId);
 
-        Content content = contentMapper.selectById(contentId);
-        if (content != null && content.getLikeCount() != null && content.getLikeCount() > 0) {
-            content.setLikeCount(content.getLikeCount() - 1);
-            contentMapper.update(content);
-        }
+        contentMapper.decreaseLikeCount(contentId);
     }
 
     @Override

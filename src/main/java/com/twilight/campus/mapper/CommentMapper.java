@@ -1,6 +1,7 @@
 package com.twilight.campus.mapper;
 
 import com.twilight.campus.pojo.Comment;
+import com.twilight.campus.vo.CommentVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public interface CommentMapper {
      * 根据内容ID查询评论列表
      * 这里只查正常状态的评论
      */
-    List<Comment> selectByContentId(Long contentId);
+    List<CommentVO> selectByContentId(Long contentId);
 
     /**
      * 根据评论ID查询详情

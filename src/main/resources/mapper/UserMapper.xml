@@ -17,6 +17,30 @@
         where id = #{id}
     </select>
 
+    <select id="selectList" resultType="com.twilight.campus.pojo.SysUser">
+        select
+            id, username, password, nickname, avatar, phone, email, gender,
+            role_id, status, create_time, update_time
+        from sys_user
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (
+                    username like concat('%', #{keyword}, '%')
+                    or nickname like concat('%', #{keyword}, '%')
+                    or phone like concat('%', #{keyword}, '%')
+                    or email like concat('%', #{keyword}, '%')
+                )
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="roleId != null">
+                and role_id = #{roleId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into sys_user
         (username, password, nickname, avatar, phone, email, gender, role_id, status, create_time, update_time)
@@ -51,6 +75,13 @@
             </if>
             update_time = now()
         </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        update sys_user
+        set status = #{status},
+            update_time = now()
         where id = #{id}
     </update>
 

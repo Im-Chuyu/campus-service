@@ -4,6 +4,7 @@ import com.twilight.campus.dto.CommentAddDTO;
 import com.twilight.campus.pojo.Comment;
 import com.twilight.campus.result.Result;
 import com.twilight.campus.service.CommentService;
+import com.twilight.campus.vo.CommentVO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class CommentController {
      * 查询某个内容下的评论列表
      */
     @GetMapping("/list/{contentId}")
-    public Result<List<Comment>> listByContentId(@PathVariable Long contentId) {
+    public Result<List<CommentVO>> listByContentId(@PathVariable Long contentId) {
         return Result.success(commentService.listByContentId(contentId));
     }
 

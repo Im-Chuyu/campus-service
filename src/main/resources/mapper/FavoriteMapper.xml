@@ -26,11 +26,25 @@
         and content_id = #{contentId}
     </delete>
 
-    <select id="selectByUserId" resultType="com.twilight.campus.pojo.Favorite">
-        select id, user_id, content_id, create_time
-        from favorite
-        where user_id = #{userId}
-        order by create_time desc
+    <select id="selectByUserId" resultType="com.twilight.campus.vo.FavoriteVO">
+        select
+            f.id,
+            f.content_id as contentId,
+            c.title,
+            c.content,
+            c.cover_img as coverImg,
+            c.category_id as categoryId,
+            c.like_count as likeCount,
+            c.favorite_count as favoriteCount,
+            c.comment_count as commentCount,
+            c.view_count as viewCount,
+            c.status,
+            f.create_time as createTime
+        from favorite f
+                 left join content c on f.content_id = c.id
+        where f.user_id = #{userId}
+        order by f.create_time desc
     </select>
+
 
 </mapper>

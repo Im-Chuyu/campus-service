@@ -10,6 +10,7 @@ import com.twilight.campus.pojo.Content;
 import com.twilight.campus.pojo.SysUser;
 import com.twilight.campus.service.CommentService;
 import com.twilight.campus.utils.UserContext;
+import com.twilight.campus.vo.CommentVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,7 +76,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> listByContentId(Long contentId) {
+    public List<CommentVO> listByContentId(Long contentId) {
         // 1. 检查内容是否存在
         Content content = contentMapper.selectById(contentId);
         if (content == null) {

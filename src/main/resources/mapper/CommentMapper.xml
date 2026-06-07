@@ -6,47 +6,50 @@
 <mapper namespace="com.twilight.campus.mapper.CommentMapper">
 
     <!-- 根据内容ID查询评论列表 -->
-    <select id="selectByContentId" resultType="com.twilight.campus.pojo.Comment">
+    <select id="selectByContentId" resultType="com.twilight.campus.vo.CommentVO">
         select
-        id,
-        content_id,
-        user_id,
-        parent_id,
-        comment_text,
-        status,
-        create_time
-        from comment
-        where content_id = #{contentId}
-        and status = 1
-        order by create_time asc
+            c.id,
+            c.content_id as contentId,
+            c.user_id as userId,
+            c.parent_id as parentId,
+            c.comment_text as commentText,
+            c.create_time as createTime,
+            u.username as username,
+            u.nickname as nickname,
+            u.avatar as avatar
+        from `comment` c
+                 left join sys_user u on c.user_id = u.id
+        where c.content_id = #{contentId}
+          and c.status = 1
+        order by c.create_time asc
     </select>
 
     <!-- 根据评论ID查询 -->
     <select id="selectById" resultType="com.twilight.campus.pojo.Comment">
         select
-        id,
-        content_id,
-        user_id,
-        parent_id,
-        comment_text,
-        status,
-        create_time
-        from comment
+            id,
+            content_id,
+            user_id,
+            parent_id,
+            comment_text,
+            status,
+            create_time
+        from `comment`
         where id = #{id}
         limit 1
     </select>
 
     <!-- 新增评论 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into comment
-        (content_id, user_id, parent_id, comment_text, status, create_time)
+        insert into `comment`
+            (content_id, user_id, parent_id, comment_text, status, create_time)
         values
-        (#{contentId}, #{userId}, #{parentId}, #{commentText}, #{status}, now())
+            (#{contentId}, #{userId}, #{parentId}, #{commentText}, #{status}, now())
     </insert>
 
     <!-- 修改评论状态 -->
     <update id="updateStatus">
-        update comment
+        update `comment`
         set status = #{status}
         where id = #{id}
     </update>

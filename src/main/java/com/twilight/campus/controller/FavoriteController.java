@@ -3,6 +3,7 @@ package com.twilight.campus.controller;
 import com.twilight.campus.pojo.Favorite;
 import com.twilight.campus.result.Result;
 import com.twilight.campus.service.FavoriteService;
+import com.twilight.campus.vo.FavoriteVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +41,7 @@ public class FavoriteController {
      * 我的收藏
      */
     @GetMapping("/myList")
-    public Result<List<Favorite>> myList() {
+    public Result<List<FavoriteVO>> myList() {
         return Result.success(favoriteService.myList());
     }
 }

@@ -12,6 +12,7 @@ import com.twilight.campus.service.AuditService;
 import com.twilight.campus.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void handleAudit(AuditHandleDTO dto) {
         checkAdmin();
 

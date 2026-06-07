@@ -65,4 +65,18 @@ public interface ContentMapper {
      */
     int updateCommentCount(Content content);
 
+    /**
+     * 更新点赞收藏
+     */
+    int increaseLikeCount(Long id);
+
+    int decreaseLikeCount(Long id);
+
+    int increaseFavoriteCount(Long id);
+
+    int decreaseFavoriteCount(Long id);
+
+    int increaseViewCount(Long id);
+
+
 }

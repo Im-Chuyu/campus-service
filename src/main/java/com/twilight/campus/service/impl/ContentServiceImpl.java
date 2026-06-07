@@ -12,6 +12,7 @@ import com.twilight.campus.pojo.Content;
 import com.twilight.campus.pojo.SysUser;
 import com.twilight.campus.service.ContentService;
 import com.twilight.campus.utils.UserContext;
+import com.twilight.campus.utils.AuthUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,8 @@ public class ContentServiceImpl implements ContentService {
         if (content == null) {
             throw new BusinessException(ResultCodeConstant.NOT_FOUND, "内容不存在");
         }
+        contentMapper.increaseViewCount(id);
+        content.setViewCount((content.getViewCount() == null ? 0 : content.getViewCount()) + 1);
         return content;
     }
 
@@ -123,7 +126,8 @@ public class ContentServiceImpl implements ContentService {
             throw new BusinessException(ResultCodeConstant.UNAUTHORIZED, "未登录");
         }
 
-        if (!oldContent.getUserId().equals(currentUser.getId())) {
+        boolean isAdmin = currentUser.getRoleId() != null && currentUser.getRoleId().equals(1L);
+        if (!isAdmin && !oldContent.getUserId().equals(currentUser.getId())) {
             throw new BusinessException(ResultCodeConstant.FORBIDDEN, "只能删除自己的内容");
         }
 

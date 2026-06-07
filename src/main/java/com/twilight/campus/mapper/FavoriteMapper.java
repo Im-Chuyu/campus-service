@@ -1,6 +1,7 @@
 package com.twilight.campus.mapper;
 
 import com.twilight.campus.pojo.Favorite;
+import com.twilight.campus.vo.FavoriteVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -26,5 +27,5 @@ public interface FavoriteMapper {
     /**
      * 查询我的收藏
      */
-    List<Favorite> selectByUserId(Long userId);
+    List<FavoriteVO> selectByUserId(Long userId);
 }

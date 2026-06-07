@@ -102,7 +102,7 @@
         set status = #{status},
             audit_reason = #{auditReason},
             update_time = now()
-        where id = #{id}
+        where id = #{id} and status = 0
     </update>
 
     <!--更新评论数-->
@@ -112,6 +112,48 @@
             update_time = now()
         where id = #{id}
     </update>
+
+    <update id="increaseLikeCount">
+        update content
+        set like_count = ifnull(like_count, 0) + 1,
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <update id="decreaseLikeCount">
+        update content
+        set like_count = case
+                             when ifnull(like_count, 0) > 0 then like_count - 1
+                             else 0
+            end,
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <update id="increaseFavoriteCount">
+        update content
+        set favorite_count = ifnull(favorite_count, 0) + 1,
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <update id="decreaseFavoriteCount">
+        update content
+        set favorite_count = case
+                                 when ifnull(favorite_count, 0) > 0 then favorite_count - 1
+                                 else 0
+            end,
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <update id="increaseViewCount">
+        update content
+        set view_count = ifnull(view_count, 0) + 1,
+            update_time = now()
+        where id = #{id}
+    </update>
+
 
 
 </mapper>

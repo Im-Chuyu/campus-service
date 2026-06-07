@@ -2,6 +2,7 @@ package com.twilight.campus.service;
 
 import com.twilight.campus.dto.CommentAddDTO;
 import com.twilight.campus.pojo.Comment;
+import com.twilight.campus.vo.CommentVO;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface CommentService {
     /**
      * 查询某个内容下的评论
      */
-    List<Comment> listByContentId(Long contentId);
+    List<CommentVO> listByContentId(Long contentId);
 
     /**
      * 删除评论
