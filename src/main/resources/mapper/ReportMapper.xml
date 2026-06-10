@@ -21,6 +21,36 @@
         limit 1
     </select>
 
+    <select id="countList" resultType="java.lang.Long">
+        select count(1)
+        from report
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="contentId != null">
+                and content_id = #{contentId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" resultType="com.twilight.campus.pojo.Report">
+        select
+        id, user_id, content_id, report_type, report_reason, status,
+        handler_id, handle_result, create_time, handle_time
+        from report
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="contentId != null">
+                and content_id = #{contentId}
+            </if>
+        </where>
+        order by create_time desc
+        limit #{offset}, #{pageSize}
+    </select>
+
     <select id="selectByUserId" resultType="com.twilight.campus.pojo.Report">
         select
         id, user_id, content_id, report_type, report_reason, status,
@@ -28,6 +58,14 @@
         from report
         where user_id = #{userId}
         order by create_time desc
+    </select>
+
+    <select id="countPendingByUserAndContent" resultType="int">
+        select count(1)
+        from report
+        where user_id = #{userId}
+          and content_id = #{contentId}
+          and status = 0
     </select>
 
     <select id="selectPendingList" resultType="com.twilight.campus.pojo.Report">

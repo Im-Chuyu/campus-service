@@ -4,6 +4,7 @@ import com.twilight.campus.dto.ReportAddDTO;
 import com.twilight.campus.dto.ReportHandleDTO;
 import com.twilight.campus.dto.ReportQueryDTO;
 import com.twilight.campus.pojo.Report;
+import com.twilight.campus.vo.PageResultVO;
 
 import java.util.List;
 
@@ -38,4 +39,6 @@ public interface ReportService {
      * 条件查询举报列表
      */
     List<Report> list(ReportQueryDTO query);
+
+    PageResultVO<Report> page(ReportQueryDTO query);
 }

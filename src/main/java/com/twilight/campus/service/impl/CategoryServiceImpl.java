@@ -4,6 +4,7 @@ import com.twilight.campus.constant.ResultCodeConstant;
 import com.twilight.campus.dto.CategorySaveDTO;
 import com.twilight.campus.exception.BusinessException;
 import com.twilight.campus.mapper.CategoryMapper;
+import com.twilight.campus.mapper.ContentMapper;
 import com.twilight.campus.pojo.Category;
 import com.twilight.campus.service.CategoryService;
 import org.springframework.beans.BeanUtils;
@@ -17,6 +18,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryMapper categoryMapper;
+
+    @Autowired
+    private ContentMapper contentMapper;
 
     @Override
     public List<Category> list() {
@@ -82,6 +86,11 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryMapper.selectById(id);
         if (category == null) {
             throw new BusinessException(ResultCodeConstant.NOT_FOUND, "分类不存在");
+        }
+
+        int contentCount = contentMapper.countByCategoryId(id);
+        if (contentCount > 0) {
+            throw new BusinessException(ResultCodeConstant.BAD_REQUEST, "该分类下还有文章，不能删除。请先处理该分类下的文章，或将分类设置为停用。");
         }
 
         categoryMapper.deleteById(id);

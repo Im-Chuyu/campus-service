@@ -1,9 +1,17 @@
 target/
+logs/
+uploads/
+*.log
+application-local.yml
+application-prod.yml
+.env
+.env.local
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
 ### IntelliJ IDEA ###
+.idea/
 .idea/modules.xml
 .idea/jarRepositories.xml
 .idea/compiler.xml

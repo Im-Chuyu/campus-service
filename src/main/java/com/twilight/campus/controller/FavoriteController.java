@@ -1,6 +1,5 @@
 package com.twilight.campus.controller;
 
-import com.twilight.campus.pojo.Favorite;
 import com.twilight.campus.result.Result;
 import com.twilight.campus.service.FavoriteService;
 import com.twilight.campus.vo.FavoriteVO;

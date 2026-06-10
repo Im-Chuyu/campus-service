@@ -5,6 +5,7 @@ import com.twilight.campus.pojo.AuditRecord;
 import com.twilight.campus.pojo.Content;
 import com.twilight.campus.result.Result;
 import com.twilight.campus.service.AuditService;
+import com.twilight.campus.vo.PageResultVO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,12 @@ public class AuditController {
     @GetMapping("/waitList")
     public Result<List<Content>> waitList() {
         return Result.success(auditService.waitAuditList());
+    }
+
+    @GetMapping("/waitPage")
+    public Result<PageResultVO<Content>> waitPage(@RequestParam(defaultValue = "1") Integer page,
+                                                  @RequestParam(defaultValue = "10") Integer pageSize) {
+        return Result.success(auditService.waitAuditPage(page, pageSize));
     }
 
     /**

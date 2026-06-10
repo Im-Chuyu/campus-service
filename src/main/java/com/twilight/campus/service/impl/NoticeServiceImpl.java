@@ -9,11 +9,18 @@ import com.twilight.campus.pojo.Notice;
 import com.twilight.campus.pojo.SysUser;
 import com.twilight.campus.service.NoticeService;
 import com.twilight.campus.utils.AuthUtil;
+import com.twilight.campus.utils.PageUtil;
 import com.twilight.campus.utils.UserContext;
+import com.twilight.campus.vo.PageResultVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -25,21 +32,40 @@ public class NoticeServiceImpl implements NoticeService {
     @Autowired
     private NoticeMapper noticeMapper;
 
+    @Autowired
+    private DataSource dataSource;
+
     @Override
     public List<Notice> list(NoticeQueryDTO query) {
+        ensureHeroBackgroundColumn();
         // 管理员才能查全部公告
         AuthUtil.checkAdmin();
         return noticeMapper.selectList(query);
     }
 
     @Override
+    public PageResultVO<Notice> page(NoticeQueryDTO query) {
+        ensureHeroBackgroundColumn();
+        AuthUtil.checkAdmin();
+        int page = PageUtil.safePage(query.getPage());
+        int pageSize = PageUtil.safePageSize(query.getPageSize());
+        query.setPage(page);
+        query.setPageSize(pageSize);
+        query.setOffset(PageUtil.offset(page, pageSize));
+        Long total = noticeMapper.countList(query);
+        return PageResultVO.of(noticeMapper.selectPage(query), total == null ? 0L : total, page, pageSize);
+    }
+
+    @Override
     public List<Notice> publishedList() {
+        ensureHeroBackgroundColumn();
         // 用户和游客都可以看已发布公告
         return noticeMapper.selectPublishedList();
     }
 
     @Override
     public Notice getById(Long id) {
+        ensureHeroBackgroundColumn();
         Notice notice = noticeMapper.selectById(id);
         if (notice == null) {
             throw new BusinessException(ResultCodeConstant.NOT_FOUND, "公告不存在");
@@ -58,6 +84,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public void add(NoticeSaveDTO dto) {
+        ensureHeroBackgroundColumn();
         AuthUtil.checkAdmin();
 
         SysUser currentUser = UserContext.getUser();
@@ -65,12 +92,14 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = new Notice();
         BeanUtils.copyProperties(dto, notice);
         notice.setPublisherId(currentUser.getId());
+        notice.setHeroBackground(null);
 
         noticeMapper.insert(notice);
     }
 
     @Override
     public void update(NoticeSaveDTO dto) {
+        ensureHeroBackgroundColumn();
         AuthUtil.checkAdmin();
 
         if (dto.getId() == null) {
@@ -84,6 +113,7 @@ public class NoticeServiceImpl implements NoticeService {
 
         Notice notice = new Notice();
         BeanUtils.copyProperties(dto, notice);
+        notice.setHeroBackground(null);
         noticeMapper.update(notice);
     }
 
@@ -101,6 +131,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public void toggleTop(Long id) {
+        ensureHeroBackgroundColumn();
         AuthUtil.checkAdmin();
 
         Notice notice = noticeMapper.selectById(id);
@@ -116,5 +147,21 @@ public class NoticeServiceImpl implements NoticeService {
         updateNotice.setIsTop(notice.getIsTop() != null && notice.getIsTop() == 1 ? 0 : 1);
 
         noticeMapper.update(updateNotice);
+    }
+
+    private void ensureHeroBackgroundColumn() {
+        try (Connection connection = dataSource.getConnection()) {
+            DatabaseMetaData metaData = connection.getMetaData();
+            try (ResultSet columns = metaData.getColumns(connection.getCatalog(), null, "notice", "hero_background")) {
+                if (columns.next()) {
+                    return;
+                }
+            }
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate("alter table notice add column hero_background varchar(500) default null comment '首页大卡片背景URL' after content");
+            }
+        } catch (Exception e) {
+            throw new BusinessException(ResultCodeConstant.ERROR, "公告背景字段初始化失败");
+        }
     }
 }

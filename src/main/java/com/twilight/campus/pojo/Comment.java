@@ -16,5 +16,6 @@ public class Comment {
     private Long parentId;
     private String commentText;
     private Integer status;
+    private Integer isTop;
     private LocalDateTime createTime;
 }

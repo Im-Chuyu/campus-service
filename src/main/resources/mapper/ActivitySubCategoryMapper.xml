@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.twilight.campus.mapper.ActivitySubCategoryMapper">
+
+    <select id="selectAll" resultType="com.twilight.campus.pojo.ActivitySubCategory">
+        select id, name, sort, status, create_time, update_time
+        from activity_sub_category
+        order by sort asc, id desc
+    </select>
+
+    <select id="selectEnabled" resultType="com.twilight.campus.pojo.ActivitySubCategory">
+        select id, name, sort, status, create_time, update_time
+        from activity_sub_category
+        where status = 1
+        order by sort asc, id desc
+    </select>
+
+    <select id="selectById" resultType="com.twilight.campus.pojo.ActivitySubCategory">
+        select id, name, sort, status, create_time, update_time
+        from activity_sub_category
+        where id = #{id}
+        limit 1
+    </select>
+
+    <select id="selectByName" resultType="com.twilight.campus.pojo.ActivitySubCategory">
+        select id, name, sort, status, create_time, update_time
+        from activity_sub_category
+        where name = #{name}
+        limit 1
+    </select>
+
+    <select id="countContentById" resultType="int">
+        select count(1)
+        from content
+        where activity_sub_category_id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into activity_sub_category
+        (name, sort, status, create_time, update_time)
+        values
+        (#{name}, #{sort}, #{status}, now(), now())
+    </insert>
+
+    <update id="update">
+        update activity_sub_category
+        set name = #{name},
+            sort = #{sort},
+            status = #{status},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from activity_sub_category where id = #{id}
+    </delete>
+
+</mapper>

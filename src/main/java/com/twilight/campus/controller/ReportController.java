@@ -6,6 +6,7 @@ import com.twilight.campus.dto.ReportQueryDTO;
 import com.twilight.campus.pojo.Report;
 import com.twilight.campus.result.Result;
 import com.twilight.campus.service.ReportService;
+import com.twilight.campus.vo.PageResultVO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -70,5 +71,10 @@ public class ReportController {
     @GetMapping("/list")
     public Result<List<Report>> list(ReportQueryDTO query) {
         return Result.success(reportService.list(query));
+    }
+
+    @GetMapping("/page")
+    public Result<PageResultVO<Report>> page(ReportQueryDTO query) {
+        return Result.success(reportService.page(query));
     }
 }

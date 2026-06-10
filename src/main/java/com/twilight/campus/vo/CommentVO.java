@@ -13,10 +13,15 @@ public class CommentVO {
     private Long userId;
 
     private String commentText;
+    private Integer likeCount;
+    private Integer dislikeCount;
+    private Integer myReactionType;
+    private Integer isTop;
 
     private String username;
     private String nickname;
     private String avatar;
+    private Long roleId;
 
     private LocalDateTime createTime;
 }

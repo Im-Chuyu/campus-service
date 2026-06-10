@@ -18,6 +18,8 @@ public class NoticeSaveDTO {
     @NotBlank(message = "内容不能为空")
     private String content;
 
+    private String heroBackground;
+
     /**
      * 是否发布：1个发布 0个草稿
      */

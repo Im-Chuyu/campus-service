@@ -3,8 +3,10 @@ package com.twilight.campus.mapper;
 import com.twilight.campus.dto.ContentQueryDTO;
 import com.twilight.campus.pojo.Content;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface ContentMapper {
@@ -13,6 +15,10 @@ public interface ContentMapper {
      * 条件查询内容列表
      */
     List<Content> selectList(ContentQueryDTO query);
+
+    Long countList(ContentQueryDTO query);
+
+    List<Content> selectPage(ContentQueryDTO query);
 
     /**
      * 根据ID查询内容
@@ -41,6 +47,11 @@ public interface ContentMapper {
     int update(Content content);
 
     /**
+     * 更新内容置顶状态
+     */
+    int updateTopStatus(@Param("id") Long id, @Param("isTop") Integer isTop);
+
+    /**
      * 删除内容
      */
     int deleteById(Long id);
@@ -55,15 +66,28 @@ public interface ContentMapper {
      */
     List<Content> selectWaitAuditList();
 
+    Long countWaitAuditList();
+
+    List<Content> selectWaitAuditPage(@Param("offset") Integer offset, @Param("pageSize") Integer pageSize);
+
     /**
      * 更新内容审核状态和原因
      */
     int updateAuditStatus(Content content);
 
     /**
+     * 管理员将内容打回待审核状态
+     */
+    int returnToAudit(Content content);
+
+    /**
      * 更新内容评论数
      */
     int updateCommentCount(Content content);
+
+    int increaseCommentCount(Long id);
+
+    int decreaseCommentCount(Long id);
 
     /**
      * 更新点赞收藏
@@ -72,11 +96,16 @@ public interface ContentMapper {
 
     int decreaseLikeCount(Long id);
 
+    int updateLikeCountByDelta(@Param("id") Long id, @Param("delta") Integer delta);
+
+    int updateViewCountByDelta(@Param("id") Long id, @Param("delta") Integer delta);
+
     int increaseFavoriteCount(Long id);
 
     int decreaseFavoriteCount(Long id);
 
     int increaseViewCount(Long id);
 
+    int refreshInteractionCounts(@Param("ids") Set<Long> ids);
 
 }

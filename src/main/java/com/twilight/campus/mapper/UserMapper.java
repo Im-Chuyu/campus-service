@@ -11,6 +11,10 @@ public interface UserMapper {
 
     SysUser selectByUsername(String username);
 
+    SysUser selectByPhone(String phone);
+
+    SysUser selectByEmail(String email);
+
     SysUser selectById(Long id);
 
     int insert(SysUser user);
@@ -23,5 +27,17 @@ public interface UserMapper {
                              @Param("status") Integer status,
                              @Param("roleId") Long roleId);
 
+    Long countList(@Param("keyword") String keyword,
+                   @Param("status") Integer status,
+                   @Param("roleId") Long roleId);
+
+    List<SysUser> selectPage(@Param("keyword") String keyword,
+                             @Param("status") Integer status,
+                             @Param("roleId") Long roleId,
+                             @Param("offset") Integer offset,
+                             @Param("pageSize") Integer pageSize);
+
     int updateStatus(@Param("id") Long id, @Param("status") Integer status);
+
+    int deleteById(Long id);
 }

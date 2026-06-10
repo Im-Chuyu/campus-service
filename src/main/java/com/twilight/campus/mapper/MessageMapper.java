@@ -3,44 +3,42 @@ package com.twilight.campus.mapper;
 import com.twilight.campus.dto.MessageQueryDTO;
 import com.twilight.campus.pojo.Message;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
 public interface MessageMapper {
 
-    /**
-     * 新增消息
-     */
     int insert(Message message);
 
-    /**
-     * 查询当前用户消息列表
-     */
     List<Message> selectByUserId(Long userId);
 
-    /**
-     * 查询当前用户未读消息数
-     */
     int countUnreadByUserId(Long userId);
 
-    /**
-     * 根据ID查询消息
-     */
+    int markAllReadByUserId(Long userId);
+
     Message selectById(Long id);
 
-    /**
-     * 标记已读
-     */
     int markRead(Long id);
 
-    /**
-     * 删除消息
-     */
     int deleteById(Long id);
 
-    /**
-     * 条件查询消息
-     */
+    int deleteByRelatedId(Long relatedId);
+
+    int deleteByUserTypeAndRelatedId(@Param("userId") Long userId,
+                                     @Param("type") String type,
+                                     @Param("relatedId") Long relatedId);
+
+    int markReadByUserTypeAndRelatedId(@Param("userId") Long userId,
+                                       @Param("type") String type,
+                                       @Param("relatedId") Long relatedId);
+
+    int markReadByUserAndType(@Param("userId") Long userId, @Param("type") String type);
+
     List<Message> selectList(MessageQueryDTO query);
+
+    Long countList(MessageQueryDTO query);
+
+    List<Message> selectPage(MessageQueryDTO query);
 }

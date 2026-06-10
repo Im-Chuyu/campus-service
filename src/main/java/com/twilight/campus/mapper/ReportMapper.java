@@ -25,6 +25,11 @@ public interface ReportMapper {
     List<Report> selectByUserId(Long userId);
 
     /**
+     * 查询同一用户对同一内容的待处理举报数量
+     */
+    int countPendingByUserAndContent(Long userId, Long contentId);
+
+    /**
      * 查询待处理举报列表
      */
     List<Report> selectPendingList();
@@ -33,6 +38,10 @@ public interface ReportMapper {
      * 查询举报列表（可扩展条件）
      */
     List<Report> selectList(ReportQueryDTO query);
+
+    Long countList(ReportQueryDTO query);
+
+    List<Report> selectPage(ReportQueryDTO query);
 
     /**
      * 处理举报

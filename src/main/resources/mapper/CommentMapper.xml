@@ -5,7 +5,6 @@
 
 <mapper namespace="com.twilight.campus.mapper.CommentMapper">
 
-    <!-- 根据内容ID查询评论列表 -->
     <select id="selectByContentId" resultType="com.twilight.campus.vo.CommentVO">
         select
             c.id,
@@ -13,18 +12,100 @@
             c.user_id as userId,
             c.parent_id as parentId,
             c.comment_text as commentText,
+            c.is_top as isTop,
             c.create_time as createTime,
             u.username as username,
             u.nickname as nickname,
-            u.avatar as avatar
+            u.avatar as avatar,
+            u.role_id as roleId
         from `comment` c
                  left join sys_user u on c.user_id = u.id
         where c.content_id = #{contentId}
           and c.status = 1
-        order by c.create_time asc
+        order by c.is_top desc, c.create_time asc
     </select>
 
-    <!-- 根据评论ID查询 -->
+    <select id="selectAllByContentId" resultType="com.twilight.campus.pojo.Comment">
+        select
+            id,
+            content_id,
+            user_id,
+            parent_id,
+            comment_text,
+            status,
+            is_top,
+            create_time
+        from `comment`
+        where content_id = #{contentId}
+    </select>
+
+    <select id="selectAllByUserId" resultType="com.twilight.campus.pojo.Comment">
+        select
+            id,
+            content_id,
+            user_id,
+            parent_id,
+            comment_text,
+            status,
+            is_top,
+            create_time
+        from `comment`
+        where user_id = #{userId}
+    </select>
+
+    <select id="countRootByContentId" resultType="java.lang.Long">
+        select count(1)
+        from `comment`
+        where content_id = #{contentId}
+          and status = 1
+          and parent_id is null
+    </select>
+
+    <select id="selectRootPageByContentId" resultType="com.twilight.campus.vo.CommentVO">
+        select
+            c.id,
+            c.content_id as contentId,
+            c.user_id as userId,
+            c.parent_id as parentId,
+            c.comment_text as commentText,
+            c.is_top as isTop,
+            c.create_time as createTime,
+            u.username as username,
+            u.nickname as nickname,
+            u.avatar as avatar,
+            u.role_id as roleId
+        from `comment` c
+                 left join sys_user u on c.user_id = u.id
+        where c.content_id = #{contentId}
+          and c.status = 1
+          and c.parent_id is null
+        order by c.is_top desc, c.create_time desc, c.id desc
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectRepliesByParentIds" resultType="com.twilight.campus.vo.CommentVO">
+        select
+            c.id,
+            c.content_id as contentId,
+            c.user_id as userId,
+            c.parent_id as parentId,
+            c.comment_text as commentText,
+            c.is_top as isTop,
+            c.create_time as createTime,
+            u.username as username,
+            u.nickname as nickname,
+            u.avatar as avatar,
+            u.role_id as roleId
+        from `comment` c
+                 left join sys_user u on c.user_id = u.id
+        where c.status = 1
+          and c.parent_id in
+        <foreach collection="parentIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        order by c.is_top desc, c.create_time asc, c.id asc
+    </select>
+
     <select id="selectById" resultType="com.twilight.campus.pojo.Comment">
         select
             id,
@@ -33,24 +114,29 @@
             parent_id,
             comment_text,
             status,
+            is_top,
             create_time
         from `comment`
         where id = #{id}
         limit 1
     </select>
 
-    <!-- 新增评论 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into `comment`
-            (content_id, user_id, parent_id, comment_text, status, create_time)
+            (content_id, user_id, parent_id, comment_text, status, is_top, create_time)
         values
-            (#{contentId}, #{userId}, #{parentId}, #{commentText}, #{status}, now())
+            (#{contentId}, #{userId}, #{parentId}, #{commentText}, #{status}, #{isTop}, now())
     </insert>
 
-    <!-- 修改评论状态 -->
     <update id="updateStatus">
         update `comment`
         set status = #{status}
+        where id = #{id}
+    </update>
+
+    <update id="updateTopStatus">
+        update `comment`
+        set is_top = #{isTop}
         where id = #{id}
     </update>
 

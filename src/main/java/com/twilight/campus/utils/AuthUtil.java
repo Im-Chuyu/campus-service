@@ -26,4 +26,18 @@ public class AuthUtil {
             throw new BusinessException(ResultCodeConstant.FORBIDDEN, "无权限操作");
         }
     }
+
+    /**
+     * 判断是否超级管理员
+     */
+    public static void checkSuperAdmin() {
+        SysUser user = getLoginUser();
+        if (user.getRoleId() == null || !user.getRoleId().equals(1L) || !"admin".equals(user.getUsername())) {
+            throw new BusinessException(ResultCodeConstant.FORBIDDEN, "只有超级管理员admin可以操作");
+        }
+    }
+
+    public static boolean isSuperAdmin(SysUser user) {
+        return user != null && user.getRoleId() != null && user.getRoleId().equals(1L) && "admin".equals(user.getUsername());
+    }
 }

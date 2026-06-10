@@ -1,0 +1,38 @@
+server:
+  port: 8080
+  address: 127.0.0.1
+
+spring:
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/campus_service?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&connectionTimeZone=Asia/Shanghai
+    username: campus_user
+    password: ${DB_PASSWORD}
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 3000ms
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+campus:
+  upload:
+    path: /opt/campus-service/uploads
+  cors:
+    allowed-origins: http://116.62.39.28
+  cache:
+    redis-enabled: false
+    hot-content-ttl-seconds: 60
+    login-rate-limit-window-seconds: 60
+    login-rate-limit-max-attempts: 10
+    counter-flush-delay-ms: 30000
+    like-write-behind-enabled: false
+    view-write-behind-enabled: false

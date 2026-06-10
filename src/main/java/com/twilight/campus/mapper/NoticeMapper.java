@@ -15,6 +15,10 @@ public interface NoticeMapper {
      */
     List<Notice> selectList(NoticeQueryDTO query);
 
+    Long countList(NoticeQueryDTO query);
+
+    List<Notice> selectPage(NoticeQueryDTO query);
+
     /**
      * 查询已发布公告列表
      */
@@ -39,4 +43,6 @@ public interface NoticeMapper {
      * 删除公告
      */
     int deleteById(Long id);
+
+    int deleteByPublisherId(Long publisherId);
 }

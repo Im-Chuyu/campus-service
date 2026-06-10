@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.twilight.campus.mapper.SysConfigMapper">
+
+    <select id="selectByKey" resultType="com.twilight.campus.pojo.SysConfig">
+        select id, config_key, config_value, description, create_time, update_time
+        from sys_config
+        where config_key = #{configKey}
+        limit 1
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_config (config_key, config_value, description, create_time, update_time)
+        values (#{configKey}, #{configValue}, #{description}, now(), now())
+    </insert>
+
+    <update id="updateByKey">
+        update sys_config
+        set config_value = #{configValue},
+            description = #{description},
+            update_time = now()
+        where config_key = #{configKey}
+    </update>
+
+</mapper>

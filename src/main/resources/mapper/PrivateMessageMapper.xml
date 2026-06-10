@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.twilight.campus.mapper.PrivateMessageMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into private_message
+            (sender_id, receiver_id, content, is_read, create_time)
+        values
+            (#{senderId}, #{receiverId}, #{content}, #{isRead}, now())
+    </insert>
+
+    <select id="selectConversation" resultType="com.twilight.campus.vo.PrivateMessageVO">
+        select *
+        from (
+            select
+                pm.id,
+                pm.sender_id as senderId,
+                pm.receiver_id as receiverId,
+                pm.content,
+                pm.is_read as isRead,
+                pm.create_time as createTime,
+                u.nickname as senderNickname,
+                u.avatar as senderAvatar,
+                u.role_id as senderRoleId
+            from private_message pm
+            left join sys_user u on pm.sender_id = u.id
+            where (pm.sender_id = #{userId} and pm.receiver_id = #{peerId})
+               or (pm.sender_id = #{peerId} and pm.receiver_id = #{userId})
+            order by pm.create_time desc, pm.id desc
+            limit 30
+        ) recent_messages
+        order by createTime asc, id asc
+    </select>
+
+    <select id="selectSessions" resultType="com.twilight.campus.vo.PrivateChatSessionVO">
+        select
+            peer.id as peerId,
+            peer.username,
+            peer.nickname,
+            peer.avatar,
+            peer.role_id as roleId,
+            latest.content as lastContent,
+            latest.create_time as lastTime,
+            (
+                select count(*)
+                from private_message unread
+                where unread.sender_id = peer.id
+                  and unread.receiver_id = #{userId}
+                  and unread.is_read = 0
+            ) as unreadCount
+        from (
+            select
+                case
+                    when sender_id = #{userId} then receiver_id
+                    else sender_id
+                end as peer_id,
+                max(id) as last_id
+            from private_message
+            where sender_id = #{userId} or receiver_id = #{userId}
+            group by peer_id
+        ) session
+        join private_message latest on latest.id = session.last_id
+        join sys_user peer on peer.id = session.peer_id
+        order by latest.create_time desc, latest.id desc
+    </select>
+
+    <select id="selectConversationAfterId" resultType="com.twilight.campus.vo.PrivateMessageVO">
+        select
+            pm.id,
+            pm.sender_id as senderId,
+            pm.receiver_id as receiverId,
+            pm.content,
+            pm.is_read as isRead,
+            pm.create_time as createTime,
+            u.nickname as senderNickname,
+            u.avatar as senderAvatar,
+                u.role_id as senderRoleId
+        from private_message pm
+        left join sys_user u on pm.sender_id = u.id
+        where pm.id > #{afterId}
+          and ((pm.sender_id = #{userId} and pm.receiver_id = #{peerId})
+            or (pm.sender_id = #{peerId} and pm.receiver_id = #{userId}))
+        order by pm.id asc
+    </select>
+
+    <update id="markConversationRead">
+        update private_message
+        set is_read = 1
+        where sender_id = #{peerId}
+          and receiver_id = #{userId}
+          and is_read = 0
+    </update>
+
+    <select id="countUnreadByUserId" resultType="int">
+        select count(*)
+        from private_message
+        where receiver_id = #{userId}
+          and is_read = 0
+    </select>
+
+    <update id="markAllReadByUserId">
+        update private_message
+        set is_read = 1
+        where receiver_id = #{userId}
+          and is_read = 0
+    </update>
+
+    <delete id="deleteConversationOverflow">
+        delete from private_message
+        where ((sender_id = #{userId} and receiver_id = #{peerId})
+            or (sender_id = #{peerId} and receiver_id = #{userId}))
+          and id not in (
+            select id from (
+                select id
+                from private_message
+                where (sender_id = #{userId} and receiver_id = #{peerId})
+                   or (sender_id = #{peerId} and receiver_id = #{userId})
+                order by create_time desc, id desc
+                limit 30
+            ) recent_messages
+          )
+    </delete>
+
+</mapper>
+
+

@@ -3,6 +3,7 @@ package com.twilight.campus.service;
 import com.twilight.campus.dto.NoticeQueryDTO;
 import com.twilight.campus.dto.NoticeSaveDTO;
 import com.twilight.campus.pojo.Notice;
+import com.twilight.campus.vo.PageResultVO;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public interface NoticeService {
      * 公告列表
      */
     List<Notice> list(NoticeQueryDTO query);
+
+    PageResultVO<Notice> page(NoticeQueryDTO query);
 
     /**
      * 已发布公告列表

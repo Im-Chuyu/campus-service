@@ -20,4 +20,14 @@
         order by create_time desc
     </select>
 
+    <delete id="deleteByContentId">
+        delete from audit_record
+        where content_id = #{contentId}
+    </delete>
+
+    <delete id="deleteByAuditorId">
+        delete from audit_record
+        where auditor_id = #{auditorId}
+    </delete>
+
 </mapper>

@@ -11,4 +11,7 @@ public class NoticeQueryDTO {
     private String title;
     private Integer status;
     private Integer isTop;
+    private Integer page;
+    private Integer pageSize;
+    private Integer offset;
 }

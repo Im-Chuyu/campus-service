@@ -18,11 +18,20 @@ import java.util.Map;
  */
 public class JwtUtil {
 
+    private static final String DEFAULT_DEV_SECRET = "twilight_campus_dev_jwt_secret_key_min_32_chars";
+
     /**
      * 获取签名密钥
      */
     private static SecretKey getSignKey() {
-        byte[] keyBytes = JwtClaimsConstant.JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8);
+        String secret = System.getenv("JWT_SECRET");
+        if (secret == null || secret.isBlank()) {
+            secret = System.getProperty("JWT_SECRET");
+        }
+        if (secret == null || secret.isBlank()) {
+            secret = DEFAULT_DEV_SECRET;
+        }
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -34,11 +43,12 @@ public class JwtUtil {
      * @param roleCode 角色编码
      * @return token
      */
-    public static String createToken(Long userId, String username, String roleCode) {
+    public static String createToken(Long userId, String username, String roleCode, String deviceId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.USER_ID, userId);
         claims.put(JwtClaimsConstant.USERNAME, username);
         claims.put(JwtClaimsConstant.ROLE_CODE, roleCode);
+        claims.put(JwtClaimsConstant.DEVICE_ID, deviceId);
 
         JwtBuilder builder = Jwts.builder()
                 .setClaims(claims)

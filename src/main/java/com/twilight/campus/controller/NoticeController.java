@@ -5,6 +5,7 @@ import com.twilight.campus.dto.NoticeSaveDTO;
 import com.twilight.campus.pojo.Notice;
 import com.twilight.campus.result.Result;
 import com.twilight.campus.service.NoticeService;
+import com.twilight.campus.vo.PageResultVO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,11 @@ public class NoticeController {
     @GetMapping("/list")
     public Result<List<Notice>> list(NoticeQueryDTO query) {
         return Result.success(noticeService.list(query));
+    }
+
+    @GetMapping("/page")
+    public Result<PageResultVO<Notice>> page(NoticeQueryDTO query) {
+        return Result.success(noticeService.page(query));
     }
 
     /**

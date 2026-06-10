@@ -10,4 +10,7 @@ public class MessageQueryDTO {
 
     private Integer isRead;
     private String type;
+    private Integer page;
+    private Integer pageSize;
+    private Integer offset;
 }

@@ -11,9 +11,9 @@
 
     <!-- 文件输出 -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/campus-service.log</file>
+        <file>${LOG_DIR:-logs}/campus-service.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/campus-service.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_DIR:-logs}/campus-service.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -29,7 +29,7 @@
     </root>
 
     <!-- 指定包日志级别 -->
-    <logger name="com.twilight.campus" level="DEBUG"/>
-    <logger name="com.twilight.campus.mapper" level="DEBUG"/>
+    <logger name="com.twilight.campus" level="INFO"/>
+    <logger name="com.twilight.campus.mapper" level="INFO"/>
 
 </configuration>

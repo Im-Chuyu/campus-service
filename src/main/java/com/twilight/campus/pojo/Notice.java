@@ -13,6 +13,7 @@ public class Notice {
     private Long id;
     private String title;
     private String content;
+    private String heroBackground;
     private Integer isTop;
     private Integer status;
     private Long publisherId;

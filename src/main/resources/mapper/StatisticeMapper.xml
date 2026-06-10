@@ -46,6 +46,8 @@
         like_count as likeCount,
         favorite_count as favoriteCount
         from content
+        where status = 1
+          and ifnull(is_private, 0) = 0
         order by view_count desc, like_count desc, favorite_count desc
         limit 10
     </select>

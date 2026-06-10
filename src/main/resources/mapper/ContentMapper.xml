@@ -1,15 +1,72 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.twilight.campus.mapper.ContentMapper">
 
-    <!-- 内容列表：支持标题、分类、状态筛选 -->
+    <!-- 鍐呭鍒楄〃锛氭敮鎸佹爣棰樸€佸垎绫汇€佺姸鎬佺瓫閫?-->
     <select id="selectList" resultType="com.twilight.campus.pojo.Content">
         select
-        id, title, content, cover_img, category_id, user_id, status, audit_reason,
-        is_top, view_count, like_count, favorite_count, comment_count, create_time, update_time
+        c.id, c.title, c.content, c.cover_img, c.media_urls, c.category_id, c.activity_sub_category_id, c.user_id, c.status, c.is_private, c.audit_reason,
+        c.is_top, c.view_count, c.like_count, c.favorite_count, c.comment_count,
+        c.price, c.trade_type, c.trade_condition, c.trade_status,
+        c.create_time, c.update_time,
+        cg.name as categoryName,
+        ascg.name as activitySubCategoryName
+        from content c
+        left join category cg on cg.id = c.category_id
+        left join activity_sub_category ascg on ascg.id = c.activity_sub_category_id
+        <where>
+            <if test="title != null and title != ''">
+                and c.title like concat('%', #{title}, '%')
+            </if>
+            <if test="categoryId != null">
+                and c.category_id = #{categoryId}
+            </if>
+            <if test="activitySubCategoryId != null">
+                and c.activity_sub_category_id = #{activitySubCategoryId}
+            </if>
+            <if test="status != null">
+                and c.status = #{status}
+            </if>
+            <if test="userId != null">
+                and c.user_id = #{userId}
+            </if>
+            <if test="tradeType != null and tradeType != ''">
+                and c.trade_type = #{tradeType}
+            </if>
+            <if test="tradeStatus != null">
+                and c.trade_status = #{tradeStatus}
+            </if>
+            <if test="minPrice != null">
+                and c.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                and c.price &lt;= #{maxPrice}
+            </if>
+            <if test="includePrivate == null or includePrivate == false">
+                and ifnull(c.is_private, 0) = 0
+            </if>
+        </where>
+        <choose>
+            <when test="sort == 'views'">
+                order by c.is_top desc, c.view_count desc, c.create_time desc
+            </when>
+            <when test="sort == 'likes'">
+                order by c.is_top desc, c.like_count desc, c.create_time desc
+            </when>
+            <when test="sort == 'favorites'">
+                order by c.is_top desc, c.favorite_count desc, c.create_time desc
+            </when>
+            <otherwise>
+                order by c.is_top desc, c.create_time desc
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="countList" resultType="java.lang.Long">
+        select count(1)
         from content
         <where>
             <if test="title != null and title != ''">
@@ -18,85 +75,226 @@
             <if test="categoryId != null">
                 and category_id = #{categoryId}
             </if>
+            <if test="activitySubCategoryId != null">
+                and activity_sub_category_id = #{activitySubCategoryId}
+            </if>
             <if test="status != null">
                 and status = #{status}
             </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="tradeType != null and tradeType != ''">
+                and trade_type = #{tradeType}
+            </if>
+            <if test="tradeStatus != null">
+                and trade_status = #{tradeStatus}
+            </if>
+            <if test="minPrice != null">
+                and price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                and price &lt;= #{maxPrice}
+            </if>
+            <if test="includePrivate == null or includePrivate == false">
+                and ifnull(is_private, 0) = 0
+            </if>
         </where>
-        order by is_top desc, create_time desc
     </select>
 
-    <!-- 我的发布内容 -->
+    <select id="selectPage" resultType="com.twilight.campus.pojo.Content">
+        select
+        c.id, c.title, c.content, c.cover_img, c.media_urls, c.category_id, c.activity_sub_category_id, c.user_id, c.status, c.is_private, c.audit_reason,
+        c.is_top, c.view_count, c.like_count, c.favorite_count, c.comment_count,
+        c.price, c.trade_type, c.trade_condition, c.trade_status,
+        c.create_time, c.update_time,
+        u.username as authorUsername,
+        u.nickname as authorNickname,
+        u.avatar as authorAvatar,
+        u.role_id as authorRoleId,
+        cg.name as categoryName,
+        ascg.name as activitySubCategoryName
+        from content c
+        left join sys_user u on u.id = c.user_id
+        left join category cg on cg.id = c.category_id
+        left join activity_sub_category ascg on ascg.id = c.activity_sub_category_id
+        <where>
+            <if test="title != null and title != ''">
+                and c.title like concat('%', #{title}, '%')
+            </if>
+            <if test="categoryId != null">
+                and c.category_id = #{categoryId}
+            </if>
+            <if test="activitySubCategoryId != null">
+                and c.activity_sub_category_id = #{activitySubCategoryId}
+            </if>
+            <if test="status != null">
+                and c.status = #{status}
+            </if>
+            <if test="userId != null">
+                and c.user_id = #{userId}
+            </if>
+            <if test="tradeType != null and tradeType != ''">
+                and c.trade_type = #{tradeType}
+            </if>
+            <if test="tradeStatus != null">
+                and c.trade_status = #{tradeStatus}
+            </if>
+            <if test="minPrice != null">
+                and c.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                and c.price &lt;= #{maxPrice}
+            </if>
+            <if test="includePrivate == null or includePrivate == false">
+                and ifnull(c.is_private, 0) = 0
+            </if>
+        </where>
+        <choose>
+            <when test="sort == 'views'">
+                order by c.is_top desc, c.view_count desc, c.create_time desc
+            </when>
+            <when test="sort == 'likes'">
+                order by c.is_top desc, c.like_count desc, c.create_time desc
+            </when>
+            <when test="sort == 'favorites'">
+                order by c.is_top desc, c.favorite_count desc, c.create_time desc
+            </when>
+            <otherwise>
+                order by c.is_top desc, c.create_time desc
+            </otherwise>
+        </choose>
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <!-- 鎴戠殑鍙戝竷鍐呭 -->
     <select id="selectByUserId" resultType="com.twilight.campus.pojo.Content">
         select
-            id, title, content, cover_img, category_id, user_id, status, audit_reason,
-            is_top, view_count, like_count, favorite_count, comment_count, create_time, update_time
-        from content
-        where user_id = #{userId}
-        order by create_time desc
+            c.id, c.title, c.content, c.cover_img, c.media_urls, c.category_id, c.activity_sub_category_id, c.user_id, c.status, c.is_private, c.audit_reason,
+            c.is_top, c.view_count, c.like_count, c.favorite_count, c.comment_count,
+            c.price, c.trade_type, c.trade_condition, c.trade_status,
+            c.create_time, c.update_time,
+            cg.name as categoryName,
+            ascg.name as activitySubCategoryName
+        from content c
+        left join category cg on cg.id = c.category_id
+        left join activity_sub_category ascg on ascg.id = c.activity_sub_category_id
+        where c.user_id = #{userId}
+        order by c.create_time desc
     </select>
 
-    <!-- 根据ID查询内容 -->
+    <select id="countWaitAuditList" resultType="java.lang.Long">
+        select count(1)
+        from content
+        where status = 0
+          and ifnull(is_private, 0) = 0
+    </select>
+
+    <select id="selectWaitAuditPage" resultType="com.twilight.campus.pojo.Content">
+        select
+            id, title, content, cover_img, media_urls, category_id, activity_sub_category_id, user_id, status, is_private, audit_reason,
+            is_top, view_count, like_count, favorite_count, comment_count,
+            price, trade_type, trade_condition, trade_status,
+            create_time, update_time
+        from content
+        where status = 0
+          and ifnull(is_private, 0) = 0
+        order by create_time asc
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <!-- 鏍规嵁ID鏌ヨ鍐呭 -->
     <select id="selectById" resultType="com.twilight.campus.pojo.Content">
         select
-            id, title, content, cover_img, category_id, user_id, status, audit_reason,
-            is_top, view_count, like_count, favorite_count, comment_count, create_time, update_time
-        from content
-        where id = #{id}
+            c.id, c.title, c.content, c.cover_img, c.media_urls, c.category_id, c.activity_sub_category_id, c.user_id, c.status, c.is_private, c.audit_reason,
+            c.is_top, c.view_count, c.like_count, c.favorite_count, c.comment_count,
+            c.price, c.trade_type, c.trade_condition, c.trade_status,
+            c.create_time, c.update_time,
+            cg.name as categoryName,
+            ascg.name as activitySubCategoryName
+        from content c
+        left join category cg on cg.id = c.category_id
+        left join activity_sub_category ascg on ascg.id = c.activity_sub_category_id
+        where c.id = #{id}
         limit 1
     </select>
 
-    <!-- 分类下是否有内容 -->
+    <!-- 鍒嗙被涓嬫槸鍚︽湁鍐呭 -->
     <select id="countByCategoryId" resultType="int">
         select count(1)
         from content
         where category_id = #{categoryId}
     </select>
 
-    <!-- 用户发布了多少内容 -->
+    <!-- 鐢ㄦ埛鍙戝竷浜嗗灏戝唴瀹?-->
     <select id="countByUserId" resultType="int">
         select count(1)
         from content
         where user_id = #{userId}
+          and ifnull(is_private, 0) = 0
     </select>
 
-    <!-- 新增内容 -->
+    <!-- 鏂板鍐呭 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into content
-        (title, content, cover_img, category_id, user_id, status, audit_reason,
-         is_top, view_count, like_count, favorite_count, comment_count, create_time, update_time)
+        (title, content, cover_img, media_urls, category_id, activity_sub_category_id, user_id, status, is_private, audit_reason,
+         is_top, view_count, like_count, favorite_count, comment_count,
+         price, trade_type, trade_condition, trade_status,
+         create_time, update_time)
         values
-            (#{title}, #{content}, #{coverImg}, #{categoryId}, #{userId}, #{status}, #{auditReason},
-             #{isTop}, #{viewCount}, #{likeCount}, #{favoriteCount}, #{commentCount}, now(), now())
+            (#{title}, #{content}, #{coverImg}, #{mediaUrls}, #{categoryId}, #{activitySubCategoryId}, #{userId}, #{status}, #{isPrivate}, #{auditReason},
+             #{isTop}, #{viewCount}, #{likeCount}, #{favoriteCount}, #{commentCount},
+             #{price}, #{tradeType}, #{tradeCondition}, #{tradeStatus},
+             now(), now())
     </insert>
 
-    <!-- 修改内容 -->
+    <!-- 淇敼鍐呭 -->
     <update id="update">
         update content
         set title = #{title},
             content = #{content},
             cover_img = #{coverImg},
+            media_urls = #{mediaUrls},
             category_id = #{categoryId},
+            activity_sub_category_id = #{activitySubCategoryId},
+            status = #{status},
+            is_private = #{isPrivate},
+            audit_reason = #{auditReason},
+            price = #{price},
+            trade_type = #{tradeType},
+            trade_condition = #{tradeCondition},
+            trade_status = #{tradeStatus},
             update_time = now()
         where id = #{id}
     </update>
 
-    <!-- 删除内容 -->
+    <update id="updateTopStatus">
+        update content
+        set is_top = #{isTop},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 鍒犻櫎鍐呭 -->
     <delete id="deleteById">
         delete from content where id = #{id}
     </delete>
 
 
-    <!-- 待审核内容列表 -->
+    <!-- 寰呭鏍稿唴瀹瑰垪琛?-->
     <select id="selectWaitAuditList" resultType="com.twilight.campus.pojo.Content">
         select
-            id, title, content, cover_img, category_id, user_id, status, audit_reason,
-            is_top, view_count, like_count, favorite_count, comment_count, create_time, update_time
+            id, title, content, cover_img, media_urls, category_id, activity_sub_category_id, user_id, status, is_private, audit_reason,
+            is_top, view_count, like_count, favorite_count, comment_count,
+            price, trade_type, trade_condition, trade_status,
+            create_time, update_time
         from content
         where status = 0
+          and ifnull(is_private, 0) = 0
         order by create_time asc
     </select>
 
-    <!-- 更新审核状态 -->
+    <!-- 鏇存柊瀹℃牳鐘舵€?-->
     <update id="updateAuditStatus">
         update content
         set status = #{status},
@@ -105,10 +303,35 @@
         where id = #{id} and status = 0
     </update>
 
-    <!--更新评论数-->
+    <update id="returnToAudit">
+        update content
+        set status = 0,
+            audit_reason = #{auditReason},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <!--鏇存柊璇勮鏁?-->
     <update id="updateCommentCount">
         update content
         set comment_count = #{commentCount},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <update id="increaseCommentCount">
+        update content
+        set comment_count = ifnull(comment_count, 0) + 1,
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <update id="decreaseCommentCount">
+        update content
+        set comment_count = case
+                                when ifnull(comment_count, 0) > 0 then comment_count - 1
+                                else 0
+            end,
             update_time = now()
         where id = #{id}
     </update>
@@ -147,6 +370,20 @@
         where id = #{id}
     </update>
 
+    <update id="updateLikeCountByDelta">
+        update content
+        set like_count = greatest(ifnull(like_count, 0) + #{delta}, 0),
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <update id="updateViewCountByDelta">
+        update content
+        set view_count = greatest(ifnull(view_count, 0) + #{delta}, 0),
+            update_time = now()
+        where id = #{id}
+    </update>
+
     <update id="increaseViewCount">
         update content
         set view_count = ifnull(view_count, 0) + 1,
@@ -154,6 +391,20 @@
         where id = #{id}
     </update>
 
+    <update id="refreshInteractionCounts">
+        update content c
+        set like_count = (select count(1) from like_record lr where lr.content_id = c.id),
+            favorite_count = (select count(1) from favorite f where f.content_id = c.id),
+            comment_count = (select count(1) from `comment` cm where cm.content_id = c.id and cm.status = 1),
+            update_time = now()
+        where c.id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
 
 
 </mapper>
+
+

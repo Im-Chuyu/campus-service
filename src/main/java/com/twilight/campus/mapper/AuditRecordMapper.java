@@ -17,4 +17,11 @@ public interface AuditRecordMapper {
      * 根据内容ID查询审核记录
      */
     List<AuditRecord> selectByContentId(Long contentId);
+
+    /**
+     * 根据内容ID删除审核记录
+     */
+    int deleteByContentId(Long contentId);
+
+    int deleteByAuditorId(Long auditorId);
 }

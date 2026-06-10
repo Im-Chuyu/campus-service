@@ -40,6 +40,9 @@ public class FavoriteServiceImpl implements FavoriteService {
         if (content == null) {
             throw new BusinessException(ResultCodeConstant.NOT_FOUND, "内容不存在");
         }
+        if (!canViewContent(content, currentUser)) {
+            throw new BusinessException(ResultCodeConstant.FORBIDDEN, "无权限操作该私密内容");
+        }
 
         Favorite exist = favoriteMapper.selectByUserIdAndContentId(currentUser.getId(), contentId);
         if (exist != null) {
@@ -77,5 +80,13 @@ public class FavoriteServiceImpl implements FavoriteService {
             throw new BusinessException(ResultCodeConstant.UNAUTHORIZED, "未登录");
         }
         return favoriteMapper.selectByUserId(currentUser.getId());
+    }
+
+    private boolean canViewContent(Content content, SysUser currentUser) {
+        if (!Integer.valueOf(1).equals(content.getIsPrivate())) {
+            return true;
+        }
+        boolean isAdmin = currentUser.getRoleId() != null && currentUser.getRoleId().equals(1L);
+        return isAdmin || currentUser.getId().equals(content.getUserId());
     }
 }

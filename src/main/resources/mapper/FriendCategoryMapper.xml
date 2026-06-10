@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.twilight.campus.mapper.FriendCategoryMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into friend_category (user_id, name, sort, create_time, update_time)
+        values (#{userId}, #{name}, #{sort}, now(), now())
+    </insert>
+
+    <insert id="insertIgnore">
+        insert ignore into friend_category (user_id, name, sort, create_time, update_time)
+        values (#{userId}, #{name}, #{sort}, now(), now())
+    </insert>
+
+    <delete id="deleteByIdAndUserId">
+        delete from friend_category
+        where id = #{id}
+          and user_id = #{userId}
+    </delete>
+
+    <select id="countByUserId" resultType="int">
+        select count(*)
+        from friend_category
+        where user_id = #{userId}
+    </select>
+
+    <select id="countByUserIdAndName" resultType="int">
+        select count(*)
+        from friend_category
+        where user_id = #{userId}
+          and name = #{name}
+        <if test="excludeId != null">
+          and id != #{excludeId}
+        </if>
+    </select>
+
+    <select id="selectByIdAndUserId" resultType="com.twilight.campus.pojo.FriendCategory">
+        select id, user_id as userId, name, sort, create_time as createTime, update_time as updateTime
+        from friend_category
+        where id = #{id}
+          and user_id = #{userId}
+    </select>
+
+    <select id="selectFirstByUserId" resultType="com.twilight.campus.pojo.FriendCategory">
+        select id, user_id as userId, name, sort, create_time as createTime, update_time as updateTime
+        from friend_category
+        where user_id = #{userId}
+        order by sort asc, id asc
+        limit 1
+    </select>
+
+    <select id="selectByUserId" resultType="com.twilight.campus.pojo.FriendCategory">
+        select id, user_id as userId, name, sort, create_time as createTime, update_time as updateTime
+        from friend_category
+        where user_id = #{userId}
+        order by sort asc, id asc
+    </select>
+
+    <update id="update">
+        update friend_category
+        set name = #{name},
+            update_time = now()
+        where id = #{id}
+          and user_id = #{userId}
+    </update>
+
+</mapper>

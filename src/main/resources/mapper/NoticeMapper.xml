@@ -8,7 +8,7 @@
     <!-- 公告列表：支持标题、状态、置顶筛选 -->
     <select id="selectList" resultType="com.twilight.campus.pojo.Notice">
         select
-        id, title, content, is_top, status, publisher_id, create_time, update_time
+        id, title, content, hero_background, is_top, status, publisher_id, create_time, update_time
         from notice
         <where>
             <if test="title != null and title != ''">
@@ -24,10 +24,45 @@
         order by is_top desc, create_time desc
     </select>
 
+    <select id="countList" resultType="java.lang.Long">
+        select count(1)
+        from notice
+        <where>
+            <if test="title != null and title != ''">
+                and title like concat('%', #{title}, '%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="isTop != null">
+                and is_top = #{isTop}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" resultType="com.twilight.campus.pojo.Notice">
+        select
+        id, title, content, hero_background, is_top, status, publisher_id, create_time, update_time
+        from notice
+        <where>
+            <if test="title != null and title != ''">
+                and title like concat('%', #{title}, '%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="isTop != null">
+                and is_top = #{isTop}
+            </if>
+        </where>
+        order by is_top desc, create_time desc
+        limit #{offset}, #{pageSize}
+    </select>
+
     <!-- 已发布公告列表 -->
     <select id="selectPublishedList" resultType="com.twilight.campus.pojo.Notice">
         select
-        id, title, content, is_top, status, publisher_id, create_time, update_time
+        id, title, content, hero_background, is_top, status, publisher_id, create_time, update_time
         from notice
         where status = 1
         order by is_top desc, create_time desc
@@ -36,7 +71,7 @@
     <!-- 根据ID查询 -->
     <select id="selectById" resultType="com.twilight.campus.pojo.Notice">
         select
-        id, title, content, is_top, status, publisher_id, create_time, update_time
+        id, title, content, hero_background, is_top, status, publisher_id, create_time, update_time
         from notice
         where id = #{id}
         limit 1
@@ -45,9 +80,9 @@
     <!-- 新增公告 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into notice
-        (title, content, is_top, status, publisher_id, create_time, update_time)
+        (title, content, hero_background, is_top, status, publisher_id, create_time, update_time)
         values
-        (#{title}, #{content}, #{isTop}, #{status}, #{publisherId}, now(), now())
+        (#{title}, #{content}, #{heroBackground}, #{isTop}, #{status}, #{publisherId}, now(), now())
     </insert>
 
     <!-- 修改公告 -->
@@ -55,6 +90,7 @@
         update notice
         set title = #{title},
         content = #{content},
+        hero_background = #{heroBackground},
         is_top = #{isTop},
         status = #{status},
         update_time = now()
@@ -64,6 +100,10 @@
     <!-- 删除公告 -->
     <delete id="deleteById">
         delete from notice where id = #{id}
+    </delete>
+
+    <delete id="deleteByPublisherId">
+        delete from notice where publisher_id = #{publisherId}
     </delete>
 
 </mapper>

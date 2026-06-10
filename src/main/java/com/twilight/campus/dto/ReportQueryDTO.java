@@ -10,4 +10,7 @@ public class ReportQueryDTO {
 
     private Integer status;
     private Long contentId;
+    private Integer page;
+    private Integer pageSize;
+    private Integer offset;
 }
