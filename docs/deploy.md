@@ -288,32 +288,104 @@ redis-enabled: false
 
 ## 更新发布流程
 
-后端更新：
+推荐先把新文件上传到临时位置，确认存在后再替换线上文件。这样即使上传中断，也不会破坏正在运行的版本。
+
+### 只更新后端
+
+本地构建：
 
 ```bash
 mvn clean package
-cp target/campus-service-1.0-SNAPSHOT.jar /opt/campus-service/backend/campus-service.jar
-systemctl restart campus-service
 ```
 
-前端更新：
+上传新 jar 到服务器临时路径：
+
+```text
+/opt/campus-service/campus-service-1.0-SNAPSHOT.jar
+```
+
+服务器确认：
+
+```bash
+ls -lh /opt/campus-service/campus-service-1.0-SNAPSHOT.jar
+```
+
+替换并重启：
+
+```bash
+systemctl stop campus-service
+cp /opt/campus-service/backend/campus-service.jar /opt/campus-service/backend/campus-service.jar.bak-$(date +%Y%m%d%H%M%S)
+cp /opt/campus-service/campus-service-1.0-SNAPSHOT.jar /opt/campus-service/backend/campus-service.jar
+systemctl reset-failed campus-service
+systemctl start campus-service
+sleep 3
+systemctl status campus-service --no-pager -l
+```
+
+接口检查：
+
+```bash
+curl -i http://127.0.0.1:8080/
+curl -i http://127.0.0.1:8080/home/hero/public
+curl -i http://127.0.0.1/api/
+```
+
+`/api/` 返回业务 JSON，例如 `未登录`，也代表后端和 Nginx 代理已经正常响应。
+
+### 只更新前端
+
+本地构建：
 
 ```bash
 cd campus-service-web
 npm ci
 npm run build
-rm -rf /opt/campus-service/frontend/dist
-mkdir -p /opt/campus-service/frontend/dist
-cp -a dist/. /opt/campus-service/frontend/dist/
-nginx -t
-systemctl reload nginx
 ```
 
-SQL 更新：
+上传 `campus-service-web/dist/` 内的文件到服务器：
+
+```text
+/opt/campus-service/frontend/dist/
+```
+
+服务器检查并重载 Nginx：
+
+```bash
+ls -lh /opt/campus-service/frontend/dist/index.html
+nginx -t
+systemctl reload nginx
+curl -I http://127.0.0.1/
+```
+
+### 同时更新前后端
+
+先按“只更新后端”替换 jar 并确认服务正常，再按“只更新前端”覆盖 `dist` 并重载 Nginx。数据库脚本只有在结构或初始化数据发生变化时才需要执行。
+
+### 数据库更新
 
 - 测试环境可以删库重建。
 - 生产环境使用增量脚本。
 - 执行前先备份数据库。
+
+测试环境确认可以清空数据时，可以执行完整建库脚本：
+
+```bash
+mysql -uroot -p < /opt/campus-service/sql/campus.sql
+```
+
+执行后重新设置管理员账号。
+
+## 首页大卡片配置
+
+首页大卡片接口：
+
+```text
+GET /home/hero/public
+```
+
+普通用户每次进入首页会请求该接口。后端对配置做了 5 分钟内存缓存，避免每次刷新都查询 `sys_config` 表。管理员在后台修改首页大卡片后，后端会立即刷新缓存。
+
+单机部署时内存缓存足够使用；如果以后扩展到多台服务器，需要改为 Redis 缓存或增加配置更新时间同步机制。
 
 ## 验证清单
 

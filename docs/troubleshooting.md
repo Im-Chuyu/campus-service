@@ -47,6 +47,29 @@ nginx -t
 - Nginx `root` 是否指向 `/opt/campus-service/frontend/dist`
 - Vue Router 是否配置了 `try_files $uri $uri/ /index.html`
 
+## 本地前端无法启动
+
+先确认在前端目录：
+
+```bash
+cd /d/java-project/campus-service/campus-service-web
+```
+
+检查脚本：
+
+```bash
+npm run
+```
+
+正常应能看到 `dev`、`build`、`preview`。如果依赖缺失，重新安装：
+
+```bash
+npm install
+npm run dev
+```
+
+如果端口被占用，Vite 会自动换端口，按终端输出的地址访问即可。
+
 ## `/api` 请求失败
 
 排查：
@@ -126,6 +149,22 @@ PONG
 
 ```bash
 grep -n "redis-enabled" /opt/campus-service/config/application-prod.yml
+```
+
+## 首页大卡片是否频繁查库
+
+首页进入时前端会请求：
+
+```text
+GET /home/hero/public
+```
+
+后端当前已经加入 5 分钟内存缓存，普通刷新不会每次都访问数据库。管理员在后台保存首页大卡片后，缓存会立即刷新。
+
+如果想确认接口是否正常：
+
+```bash
+curl -i http://127.0.0.1:8080/home/hero/public
 ```
 
 ## MySQL 检查
