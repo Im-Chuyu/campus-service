@@ -212,10 +212,6 @@
               </el-input>
             </el-form-item>
 
-            <el-form-item label="原密码" prop="oldPassword">
-              <el-input v-model="passwordForm.oldPassword" size="large" type="password" show-password placeholder="请输入原密码" />
-            </el-form-item>
-
             <el-form-item label="新密码" prop="newPassword">
               <el-input v-model="passwordForm.newPassword" size="large" type="password" show-password placeholder="8-20位，包含字母和数字" />
             </el-form-item>
@@ -361,7 +357,6 @@ const form = reactive({
 const passwordForm = reactive({
   channel: 'phone',
   code: '',
-  oldPassword: '',
   newPassword: '',
   confirmPassword: ''
 })
@@ -458,7 +453,6 @@ const passwordRules = {
     { required: true, message: '请输入验证码', trigger: 'blur' },
     { pattern: /^\d{6}$/, message: '验证码为6位数字', trigger: 'blur' }
   ],
-  oldPassword: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
   newPassword: [
     { required: true, message: '请输入新密码', trigger: 'blur' },
     {

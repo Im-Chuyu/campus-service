@@ -166,7 +166,7 @@
 <script setup>
 import { onBeforeUnmount, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   User,
   Lock,
@@ -278,7 +278,9 @@ const sendRegisterCode = async () => {
       channel: 'phone',
       target: form.phone
     })
-    ElMessage.success(res.msg || '验证码已发送')
+    await ElMessageBox.alert(res.msg || `验证码：${res.data}`, '验证码', {
+      confirmButtonText: '知道了'
+    })
     startCountdown()
   } finally {
     codeLoading.value = false

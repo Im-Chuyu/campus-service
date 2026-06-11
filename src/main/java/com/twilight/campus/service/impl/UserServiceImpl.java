@@ -207,12 +207,8 @@ public class UserServiceImpl implements UserService {
         String target = resolveUserVerificationTarget(currentUser, dto.getChannel());
         verificationCodeService.verifyAndConsume("change_password", dto.getChannel(), target, dto.getCode());
 
-        if (dto.getOldPassword().equals(dto.getNewPassword())) {
+        if (PasswordUtil.matches(dto.getNewPassword(), currentUser.getPassword())) {
             throw new BusinessException(ResultCodeConstant.BAD_REQUEST, "新密码不能和旧密码相同");
-        }
-
-        if (!PasswordUtil.matches(dto.getOldPassword(), currentUser.getPassword())) {
-            throw new BusinessException(ResultCodeConstant.BAD_REQUEST, "原密码错误");
         }
 
         SysUser updateUser = new SysUser();
@@ -234,6 +230,9 @@ public class UserServiceImpl implements UserService {
         }
         if (user.getStatus() != null && user.getStatus() == 0) {
             throw new BusinessException(ResultCodeConstant.FORBIDDEN, "账号已被禁用");
+        }
+        if (user.getRoleId() != null && user.getRoleId().equals(1L)) {
+            throw new BusinessException(ResultCodeConstant.FORBIDDEN, "管理员账号不能通过忘记密码功能重置密码");
         }
         verificationCodeService.verifyAndConsume("reset_password", dto.getChannel(), dto.getTarget(), dto.getCode());
         if (PasswordUtil.matches(dto.getNewPassword(), user.getPassword())) {
