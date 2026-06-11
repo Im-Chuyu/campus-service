@@ -6,6 +6,17 @@ application-local.yml
 application-prod.yml
 .env
 .env.local
+
+# Frontend
+campus-service-web/node_modules/
+campus-service-web/dist/
+campus-service-web/.env
+campus-service-web/.env.local
+campus-service-web/.env.*.local
+campus-service-web/npm-debug.log*
+campus-service-web/yarn-debug.log*
+campus-service-web/yarn-error.log*
+campus-service-web/pnpm-debug.log*
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

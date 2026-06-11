@@ -1,0 +1,214 @@
+:root {
+  --bg: #101318;
+  --panel: rgba(20, 24, 31, 0.84);
+  --panel-solid: #171b22;
+  --text: #f4f7fb;
+  --muted: #a7b0bf;
+  --primary: #38bdf8;
+  --primary-deep: #0284c7;
+  --accent: #f59e0b;
+  --border: rgba(226, 232, 240, 0.12);
+  --shadow: 0 22px 70px rgba(0, 0, 0, 0.36);
+  --bg-start: #0f172a;
+  --bg-end: #111827;
+  --glow-primary: rgba(56, 189, 248, 0.2);
+  --glow-accent: rgba(245, 158, 11, 0.16);
+  --surface: rgba(17, 24, 39, 0.9);
+  --surface-soft: rgba(31, 41, 55, 0.82);
+  --topbar-bg: rgba(15, 23, 42, 0.86);
+  --hero-gradient: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(2, 132, 199, 0.82));
+  --theme-tint: rgba(37, 55, 75, 0.92);
+  --theme-tint-soft: rgba(47, 61, 80, 0.84);
+  --control-bg: rgba(38, 49, 65, 0.9);
+  --control-hover: rgba(47, 63, 84, 0.94);
+  --surface-pattern: rgba(226, 232, 240, 0.035);
+  --system-sheen: linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 34%, rgba(56, 189, 248, 0.08) 62%, transparent 100%);
+  --system-pattern: rgba(226, 232, 240, 0.045);
+  --system-pattern-soft: rgba(226, 232, 240, 0.032);
+  --system-paper: rgba(255, 255, 255, 0.028);
+  --system-fiber: rgba(255, 255, 255, 0.035);
+  --app-background:
+    var(--system-sheen),
+    radial-gradient(circle at 10% 10%, var(--glow-primary), transparent 30%),
+    radial-gradient(circle at 90% 12%, var(--glow-accent), transparent 28%),
+    radial-gradient(circle at 38% 72%, var(--glow-primary), transparent 34%),
+    radial-gradient(circle at 82% 82%, var(--glow-accent), transparent 30%),
+      repeating-linear-gradient(0deg, var(--system-pattern) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(90deg, var(--system-pattern-soft) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(115deg, transparent 0 12px, var(--system-paper) 12px 13px, transparent 13px 30px),
+    radial-gradient(circle at 1px 1px, var(--system-fiber) 1px, transparent 1.6px),
+    linear-gradient(135deg, var(--bg-start), var(--bg-end));
+  --app-background-size: auto, auto, auto, auto, auto, 28px 28px, 28px 28px, auto, 18px 18px, auto;
+  --app-background-position: center;
+  --app-background-repeat: repeat;
+  --radius: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  min-height: 100%;
+  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  color: var(--text);
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+}
+
+#app {
+  position: relative;
+  min-height: 100vh;
+  background: transparent;
+}
+
+.app-background-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--app-background);
+  background-size: var(--app-background-size);
+  background-position: var(--app-background-position);
+  background-repeat: var(--app-background-repeat);
+  background-attachment: fixed;
+}
+
+#app > :not(.app-background-layer) {
+  position: relative;
+  z-index: 1;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--primary);
+  --el-button-border-color: var(--primary);
+  --el-button-hover-bg-color: var(--primary-deep);
+  --el-button-hover-border-color: var(--primary-deep);
+}
+
+.el-button {
+  --el-button-text-color: var(--text);
+  --el-button-bg-color: var(--surface);
+  --el-button-border-color: var(--border);
+  --el-button-hover-text-color: var(--primary);
+  --el-button-hover-bg-color: var(--surface-soft);
+  --el-button-hover-border-color: var(--primary);
+}
+
+.el-button:not(.el-button--primary):not(.is-link):hover {
+  background: var(--control-hover);
+}
+
+.el-card,
+.el-dialog {
+  --el-card-bg-color: var(--surface);
+  --el-bg-color: var(--surface);
+  --el-fill-color-blank: var(--surface);
+  --el-fill-color-light: var(--surface-soft);
+  --el-text-color-primary: var(--text);
+  --el-text-color-regular: var(--muted);
+  --el-border-color: var(--border);
+  --el-border-color-lighter: var(--border);
+  --el-box-shadow-light: var(--shadow);
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.el-popper,
+.el-dropdown-menu,
+.el-select-dropdown,
+.el-picker-panel,
+.el-message-box {
+  --el-bg-color-overlay: var(--surface);
+  --el-bg-color: var(--surface);
+  --el-fill-color: var(--surface-soft);
+  --el-fill-color-light: var(--surface-soft);
+  --el-text-color-primary: var(--text);
+  --el-text-color-regular: var(--muted);
+  --el-border-color-light: var(--border);
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.el-dropdown-menu__item,
+.el-select-dropdown__item {
+  color: var(--text);
+}
+
+.el-dropdown-menu__item:hover,
+.el-select-dropdown__item.is-hovering {
+  background: var(--surface-soft);
+  color: var(--primary);
+}
+
+.el-input__wrapper,
+.el-select__wrapper {
+  border-radius: 14px;
+  background: var(--control-bg);
+  box-shadow: 0 0 0 1px var(--border) inset;
+}
+
+.el-input__inner,
+.el-textarea__inner {
+  color: var(--text);
+}
+
+.el-textarea__inner {
+  background: var(--control-bg);
+  border-color: var(--border);
+}
+
+.el-input-number__decrease,
+.el-input-number__increase {
+  background: var(--surface-soft);
+  border-color: var(--border);
+  color: var(--muted);
+}
+
+.el-table {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: transparent;
+  --el-table-header-bg-color: var(--theme-tint-soft);
+  --el-table-row-hover-bg-color: var(--theme-tint-soft);
+  --el-table-border-color: var(--border);
+  --el-table-text-color: var(--text);
+  --el-table-header-text-color: var(--muted);
+}
+
+.el-pagination.is-background .el-pager li,
+.el-pagination.is-background button {
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.el-pagination.is-background .el-pager li.is-active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.el-input-number__decrease:hover,
+.el-input-number__increase:hover {
+  color: var(--primary);
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .topbar {
+    position: static !important;
+    top: auto !important;
+  }
+}

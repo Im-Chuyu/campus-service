@@ -11,6 +11,7 @@ public class PrivateChatPeerVO {
     private String nickname;
     private String signature;
     private String avatar;
+    private String profileBackground;
     private String phone;
     private Integer phoneVisible;
     private String email;
