@@ -1,8 +1,53 @@
 # campus-sql
 
-## 使用说明
+这个目录保存校园服务平台的数据库脚本。
 
-- `campus.sql` 是唯一完整建库脚本。新服务器测试时，先删除旧的 `campus_service` 数据库，再执行这一份脚本。
-- `maintenance.sql` 是后续维护模板，不用于建库。里面包含管理员维护、分类维护、系统配置、内容状态调整、好友分类升级和数据检查等常用 SQL。
-- 建库脚本不内置默认管理员账号，避免上线包里出现固定密码。建库后先从前端注册一个用户，再按 `maintenance.sql` 的管理员维护语句把该用户提权为管理员。
-- 最高权限管理员由业务代码按用户名 `admin` 判断。需要最高权限时，请确保目标管理员用户名为 `admin`，且 `role_id = 1`、`status = 1`。
+## 文件说明
+
+- `campus.sql`：完整建库脚本。会删除并重建 `campus_service` 数据库，适合本地开发、测试环境、演示环境。
+- `maintenance.sql`：维护脚本集合。包含管理员授权、分类维护、系统配置、内容状态调整、数据检查等常用 SQL。
+- `fix-activity-sub-category.sql`：活动通知子分类相关修复脚本。
+- `optimize-private-chat.sql`：私聊相关优化脚本。
+- `REBUILD.md`：测试环境删库重建说明。
+
+## 重要提醒
+
+`campus.sql` 会执行删库重建。生产环境不要直接执行，除非已经确认可以清空数据。
+
+测试环境执行：
+
+```bash
+mysql -uroot -p < campus.sql
+```
+
+服务器部署时常见路径：
+
+```bash
+mysql -uroot -p < /opt/campus-service/sql/campus.sql
+```
+
+## 管理员初始化
+
+建库脚本不会内置默认管理员账号。推荐：
+
+1. 先从前端注册用户。
+2. 再执行维护 SQL，把目标用户设置为管理员。
+
+示例：
+
+```sql
+USE campus_service;
+UPDATE sys_user
+SET role_id = 1,
+    status = 1,
+    update_time = NOW()
+WHERE username = 'admin';
+```
+
+最高权限管理员建议用户名为 `admin`，且满足：
+
+```text
+username = 'admin'
+role_id = 1
+status = 1
+```

@@ -1,13 +1,50 @@
 # 测试环境重建数据库
 
-`campus.sql` 是完整建库脚本，适合测试阶段删库重建。它会先删除 `campus_service` 数据库，再重新创建表、外键、基础分类和系统配置。
+`campus.sql` 是完整建库脚本，适合测试阶段删库重建。
 
-服务器上执行：
+它会：
+
+1. 删除旧的 `campus_service` 数据库。
+2. 重新创建数据库和表。
+3. 初始化基础角色、分类和系统配置。
+
+## 执行命令
+
+在项目本地：
 
 ```bash
-mysql -uroot -p < /opt/campus-service/campus-sql/campus.sql
+mysql -uroot -p < campus-sql/campus.sql
 ```
 
-如果只是升级旧库，不删数据，则不要执行 `campus.sql`，按需执行增量脚本，例如 `optimize-private-chat.sql`。
+在服务器上：
 
-建库后先注册一个用户，再用 `maintenance.sql` 里的管理员维护语句把该账号改成管理员。最高权限管理员仍按用户名 `admin` 判断，所以需要最高权限时请确保该账号 `username = 'admin'`、`role_id = 1`、`status = 1`。
+```bash
+mysql -uroot -p < /opt/campus-service/sql/campus.sql
+```
+
+## 重建后的操作
+
+1. 启动后端和前端。
+2. 在前端注册管理员账号，建议用户名为 `admin`。
+3. 使用 `maintenance.sql` 中的管理员维护 SQL 提权。
+
+示例：
+
+```sql
+USE campus_service;
+UPDATE sys_user
+SET role_id = 1,
+    status = 1,
+    update_time = NOW()
+WHERE username = 'admin';
+```
+
+## 不删库升级
+
+如果只是升级旧库，不要执行 `campus.sql`。应该按需要执行增量脚本，例如：
+
+```text
+fix-activity-sub-category.sql
+optimize-private-chat.sql
+maintenance.sql 中的指定片段
+```

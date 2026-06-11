@@ -27,7 +27,7 @@ campus:
   upload:
     path: /opt/campus-service/uploads
   cors:
-    allowed-origins: http://116.62.39.28
+    allowed-origins: http://your-domain-or-server-ip
   cache:
     redis-enabled: false
     hot-content-ttl-seconds: 60
