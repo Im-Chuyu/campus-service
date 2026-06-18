@@ -13,13 +13,13 @@
 在项目本地：
 
 ```bash
-mysql -uroot -p < campus-sql/campus.sql
+mysql -uroot -p < database/campus.sql
 ```
 
 在服务器上：
 
 ```bash
-mysql -uroot -p < /opt/campus-service/sql/campus.sql
+mysql -uroot -p < /opt/campus-service/database/campus.sql
 ```
 
 ## 重建后的操作

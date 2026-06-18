@@ -1,6 +1,9 @@
 target/
+backend/target/
 logs/
+backend/logs/
 uploads/
+backend/uploads/
 *.log
 application-local.yml
 application-prod.yml
@@ -8,15 +11,15 @@ application-prod.yml
 .env.local
 
 # Frontend
-campus-service-web/node_modules/
-campus-service-web/dist/
-campus-service-web/.env
-campus-service-web/.env.local
-campus-service-web/.env.*.local
-campus-service-web/npm-debug.log*
-campus-service-web/yarn-debug.log*
-campus-service-web/yarn-error.log*
-campus-service-web/pnpm-debug.log*
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

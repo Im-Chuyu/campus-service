@@ -1,4 +1,4 @@
-# campus-sql
+# Database Scripts
 
 这个目录保存校园服务平台的数据库脚本。
 
@@ -23,7 +23,7 @@ mysql -uroot -p < campus.sql
 服务器部署时常见路径：
 
 ```bash
-mysql -uroot -p < /opt/campus-service/sql/campus.sql
+mysql -uroot -p < /opt/campus-service/database/campus.sql
 ```
 
 ## 管理员初始化

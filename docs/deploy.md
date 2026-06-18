@@ -17,14 +17,14 @@
 ├── frontend/                 # 前端静态文件
 │   └── dist/
 ├── logs/                     # 后端日志
-├── sql/                      # SQL 脚本
+├── database/                 # SQL 脚本
 └── uploads/                  # 用户上传文件
 ```
 
 创建目录：
 
 ```bash
-mkdir -p /opt/campus-service/{backend,config,frontend,logs,sql,uploads}
+mkdir -p /opt/campus-service/{backend,config,frontend,logs,database,uploads}
 ```
 
 ## 服务器依赖
@@ -56,7 +56,7 @@ PONG
 测试环境可以直接使用完整建库脚本：
 
 ```bash
-mysql -uroot -p < /opt/campus-service/sql/campus.sql
+mysql -uroot -p < /opt/campus-service/database/campus.sql
 ```
 
 注意：`campus.sql` 会删除并重建 `campus_service` 数据库。生产环境不要直接执行这个脚本，应使用增量脚本或先备份数据。
@@ -74,7 +74,7 @@ FLUSH PRIVILEGES;
 将模板复制为生产配置：
 
 ```bash
-cp src/main/resources/application-prod.example.yml /opt/campus-service/config/application-prod.yml
+cp backend/src/main/resources/application-prod.example.yml /opt/campus-service/config/application-prod.yml
 ```
 
 生产配置示例：
@@ -119,13 +119,13 @@ campus:
 本地构建：
 
 ```bash
-mvn clean package
+mvn -f backend/pom.xml clean package
 ```
 
 上传并替换服务器 jar：
 
 ```bash
-cp target/campus-service-1.0-SNAPSHOT.jar /opt/campus-service/backend/campus-service.jar
+cp backend/target/campus-service-1.0-SNAPSHOT.jar /opt/campus-service/backend/campus-service.jar
 ```
 
 systemd 服务文件：
@@ -176,7 +176,7 @@ curl -i http://127.0.0.1:8080/
 本地构建：
 
 ```bash
-cd campus-service-web
+cd frontend
 npm ci
 npm run build
 ```
@@ -186,7 +186,7 @@ npm run build
 ```bash
 rm -rf /opt/campus-service/frontend/dist
 mkdir -p /opt/campus-service/frontend/dist
-cp -a campus-service-web/dist/. /opt/campus-service/frontend/dist/
+cp -a frontend/dist/. /opt/campus-service/frontend/dist/
 ```
 
 前端生产环境默认请求 `/api`，需要由 Nginx 转发到后端。
@@ -295,7 +295,7 @@ redis-enabled: false
 本地构建：
 
 ```bash
-mvn clean package
+mvn -f backend/pom.xml clean package
 ```
 
 上传新 jar 到服务器临时路径：
@@ -337,12 +337,12 @@ curl -i http://127.0.0.1/api/
 本地构建：
 
 ```bash
-cd campus-service-web
+cd frontend
 npm ci
 npm run build
 ```
 
-上传 `campus-service-web/dist/` 内的文件到服务器：
+上传 `frontend/dist/` 内的文件到服务器：
 
 ```text
 /opt/campus-service/frontend/dist/
@@ -370,7 +370,7 @@ curl -I http://127.0.0.1/
 测试环境确认可以清空数据时，可以执行完整建库脚本：
 
 ```bash
-mysql -uroot -p < /opt/campus-service/sql/campus.sql
+mysql -uroot -p < /opt/campus-service/database/campus.sql
 ```
 
 执行后重新设置管理员账号。

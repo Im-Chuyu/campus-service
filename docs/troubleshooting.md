@@ -52,7 +52,7 @@ nginx -t
 先确认在前端目录：
 
 ```bash
-cd /d/java-project/campus-service/campus-service-web
+cd /d/java-project/campus-service/frontend
 ```
 
 检查脚本：
