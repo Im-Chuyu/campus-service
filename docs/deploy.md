@@ -71,10 +71,10 @@ FLUSH PRIVILEGES;
 
 ## 后端配置
 
-将模板复制为生产配置：
+将生产配置复制到服务器外部配置目录：
 
 ```bash
-cp backend/src/main/resources/application-prod.example.yml /opt/campus-service/config/application-prod.yml
+cp backend/src/main/resources/application-prod.yml /opt/campus-service/config/application-prod.yml
 ```
 
 生产配置示例：

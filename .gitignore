@@ -6,7 +6,7 @@ uploads/
 backend/uploads/
 *.log
 application-local.yml
-application-prod.yml
+application-prod-local.yml
 .env
 .env.local
 

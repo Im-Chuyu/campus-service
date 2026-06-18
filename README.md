@@ -183,19 +183,19 @@ frontend/dist/
 
 ## 生产配置
 
-生产配置模板：
+生产配置文件：
 
 ```text
-backend/src/main/resources/application-prod.example.yml
+backend/src/main/resources/application-prod.yml
 ```
 
-服务器上建议复制为：
+服务器上建议复制到外部配置目录后使用：
 
 ```text
 /opt/campus-service/config/application-prod.yml
 ```
 
-不要把真实生产配置、数据库密码、JWT 密钥提交到 GitHub。
+不要把真实数据库密码、JWT 密钥提交到 GitHub，生产密码通过环境变量注入。
 
 ## 关键业务规则
 
@@ -254,7 +254,7 @@ WHERE username = 'admin';
 - `.idea/`
 - `.vscode/`
 - `.env`
-- `application-prod.yml`
+- `application-prod-local.yml`
 - 任何真实密码、Token、密钥
 
 ## 常见问题入口
